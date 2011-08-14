@@ -1,0 +1,17 @@
+= musicgrid
+
+Some essential functionality for Ruby music sequencers
+
+Used by {diamond}[http://github.com/arirusso/diamond] and others in progress
+
+Requires {midi-message}[http://github.com/arirusso/midi-message] which should install automatically with the gem
+
+== Installation
+
+gem install musicgrid 
+
+== License
+
+Licensed under Apache 2.0, See the file LICENSE
+
+Copyright © 2011 Ari Russo
