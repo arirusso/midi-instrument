@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-module SeqTools
+module Inst
   
   # a NoteEvent is a pairing of a MIDI NoteOn and NoteOff message
   # has a length that corresponds to sequencer ticks

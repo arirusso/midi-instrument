@@ -4,7 +4,7 @@ require 'helper'
 
 class EventSequencerTest < Test::Unit::TestCase
 
-  include SeqTools
+  include Inst
   include MIDIMessage
   include TestHelper
     

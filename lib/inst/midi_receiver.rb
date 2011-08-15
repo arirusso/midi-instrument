@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-module SeqTools
+module Inst
   
   module MIDIReceiver
     
