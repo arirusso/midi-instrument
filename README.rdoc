@@ -1,6 +1,6 @@
-= seqtools
+= inst
 
-Some essential functionality for Ruby music sequencers
+Common MIDI instrument/sequencer functionality
 
 Used by {diamond}[http://github.com/arirusso/diamond] and others in progress
 
@@ -8,7 +8,7 @@ Requires {midi-message}[http://github.com/arirusso/midi-message] which should in
 
 == Installation
 
-gem install seqtools
+gem install inst
 
 == License
 
