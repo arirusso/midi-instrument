@@ -4,7 +4,7 @@ require 'helper'
 
 class EventSequencerTest < Test::Unit::TestCase
 
-  include MusicGrid
+  include SeqTools
   include MIDIMessage
   include TestHelper
     

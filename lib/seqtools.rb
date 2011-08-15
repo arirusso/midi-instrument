@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Some essential functionality for Ruby music sequencers
+# Common sequencer functionality
 # (c)2011 Ari Russo and licensed under the Apache 2.0 License
 # 
 require "forwardable"
@@ -15,8 +15,8 @@ require "musicgrid/syncable"
 # classes
 require "musicgrid/midi_note_event"
 
-module MusicGrid
+module SeqTools
   
-  VERSION = "0.0.5"
+  VERSION = "0.0.1"
   
 end

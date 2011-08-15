@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-module MusicGrid
+module SeqTools
   
   module Syncable
     

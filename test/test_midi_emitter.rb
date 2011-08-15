@@ -4,7 +4,7 @@ require 'helper'
 
 class MIDIEmitterTest < Test::Unit::TestCase
 
-  include Diamond
+  include SeqTools
   include MIDIMessage
   include TestHelper
     

@@ -4,7 +4,7 @@ require 'helper'
 
 class SyncableTest < Test::Unit::TestCase
 
-  include Diamond
+  include SeqTools
   include MIDIMessage
   include TestHelper
 

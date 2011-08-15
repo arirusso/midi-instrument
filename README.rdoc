@@ -1,4 +1,4 @@
-= musicgrid
+= seqtools
 
 Some essential functionality for Ruby music sequencers
 
@@ -8,7 +8,7 @@ Requires {midi-message}[http://github.com/arirusso/midi-message] which should in
 
 == Installation
 
-gem install musicgrid 
+gem install seqtools
 
 == License
 

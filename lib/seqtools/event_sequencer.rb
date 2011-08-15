@@ -1,7 +1,22 @@
 #!/usr/bin/env ruby
-module MusicGrid
+module SeqTools
 
   module EventSequencer
+    
+    # bind an event that occurs every time the clock ticks
+    def on_tick(&block)
+      @events[:tick] = block
+    end
+    
+    # bind an event that occurs on start
+    def on_start(&block)
+      @events[:start] = block
+    end
+    
+    # bind an event that occurs on stop
+    def on_stop(&block)
+      @events[:stop] = block
+    end 
 
     # bind an event where if it evaluates to true, no messages will be outputted during that
     # step. (however, the tick event will still be fired)
