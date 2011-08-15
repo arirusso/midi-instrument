@@ -7,7 +7,6 @@ require "forwardable"
 
 # modules
 require "inst/event_sequencer"
-require "inst/midi_channel_filter"
 require "inst/midi_emitter"
 require "inst/midi_receiver"
 require "inst/syncable"
