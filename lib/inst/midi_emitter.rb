@@ -1,16 +1,33 @@
 #!/usr/bin/env ruby
 module Inst
   
-  module MIDIEmitter
+  class MIDIEmitter
     
-    def self.included(base)
-      base.send(:attr_reader, :midi_destinations)
+    attr_reader :destinations
+    
+    # toggle mute on this emitter
+    def toggle_mute
+      muted? ? unmute : mute
+    end
+    
+    # mute this emitter
+    def mute
+      @mute = true
+    end
+    
+    # unmute this emitter
+    def unmute
+      @mute = false
+    end
+    
+    # is this emitter muted?
+    def muted?
+      @mute
     end
     
     # stop and send note-offs to all destinations for all notes and channels
     def quiet!
-      stop
-      @midi_destinations.each do |output|
+      @destinations.each do |output|
         (0..127).each do |note| 
           (0..15).each do |channel|
             msg = MIDIMessage::NoteOff.new(channel, note, 0) 
@@ -22,35 +39,43 @@ module Inst
     end
     
     # add an output where MIDI data will be sent
-    def add_midi_destinations(destinations)
+    def add_destinations(destinations)
       destinations = [destinations].flatten.compact
-      @midi_destinations += destinations
-      on_midi_destinations_updated if respond_to?(:on_midi_destinations_updated)
+      @destinations += destinations
     end
-    alias_method :add_midi_destination, :add_midi_destinations
+    alias_method :add_destination, :add_destinations
     
     # remove a destination
-    def remove_midi_destinations(destinations)
+    def remove_destinations(destinations)
       destinations = [destinations].flatten.compact
-      @midi_destinations.delete_if { |d| destinations.include?(d) }
-      on_midi_destinations_updated if respond_to?(:on_midi_destinations_updated)
+      @destinations.delete_if { |d| destinations.include?(d) }
     end
-    alias_method :remove_midi_destination, :remove_midi_destinations
+    alias_method :remove_destination, :remove_destinations
     
     # send MIDI data
-    def emit_midi(data)
-      @midi_destinations.each { |o| o.puts(data) }
+    def emit(data)
+      @destinations.each { |o| o.puts(data) } if emit?
     end
     
-    private
-    
-    def emit_midi?
-      !@midi_destinations.nil? && !@midi_destinations.empty?
+    # output MIDI clock from <em>clock</em> to this emitter's destinations
+    def enable_clock_output(clock)
+      # the clock is actually responsible for emitting clock messages
+      # so we just make sure it has a hold of the current destinations
+      # for this emitter
+      @destinations.each { |dest| clock.output_midi_clock_to(dest) }
     end
-            
-    def emit_midi_to(output_devices)
-      @midi_destinations ||= []
-      add_midi_destinations(output_devices)
+        
+    def initialize(devices = nil, options = {})
+      @destinations = []
+      @mute = false
+      add_destinations(devices) unless devices.nil?   
+    end
+    
+    protected
+    
+    # does this emitter have destinations?
+    def emit?
+      !@destinations.nil? && !@destinations.empty?
     end
           
   end
