@@ -36,7 +36,7 @@ module Inst
     end
     
     # you don't truly hear sync until syncables are moved from the queue to the syncables set 
-    def activate(force_sync_now)
+    def activate_queued(force_sync_now)
       updated = false
       @queue.each do |syncable, sync_now|
         if sync_now || force_sync_now 
