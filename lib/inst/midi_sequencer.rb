@@ -99,6 +99,17 @@ module Inst
       @midi_emitter.emit(data) unless data.empty?
     end
     
+    protected
+    
+    def tick
+      @events[:before_tick].each { |event| event.call(pointer) }
+      step
+      @sequence.step(@state.pointer) do |msgs| 
+        do_output(msgs) unless muted?
+        @events[:after_tick].each { |event| event.call(msgs) }
+      end
+    end
+    
     private
 
     def bind_events
@@ -107,16 +118,6 @@ module Inst
       end
       @events[:midi_emitter_updated] << handle_updated
       @events[:sync_updated] << handle_updated
-    end
-    
-    def tick
-      #pointer = @sequence.step(@pointer)
-      @events[:before_tick].each { |event| event.call(pointer) }
-      step
-      @sequence.step(@state.pointer) do |msgs| 
-        do_output(msgs) unless muted?
-        @events[:after_tick].each { |event| event.call(msgs) }
-      end
     end
     
     def step
