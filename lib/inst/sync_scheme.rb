@@ -32,7 +32,7 @@ module Inst
     end
     
     def tick
-      @syncables.each(&:sync_tick)
+      @syncables.each(&:tick)
     end
     
     # you don't truly hear sync until syncables are moved from the queue to the syncables set 
