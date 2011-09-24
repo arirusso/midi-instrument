@@ -48,10 +48,6 @@ module Inst
       syncable.unsync(self)
     end
     
-    def sync_tick
-      self.send(:tick)
-    end
-    
     # disable internal clock
     def pause_clock
       @clock.pause
