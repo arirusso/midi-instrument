@@ -16,7 +16,6 @@ require "inst/syncable"
 
 # classes
 require "inst/midi_emitter"
-require "inst/midi_note_event"
 require "inst/midi_sequencer"
 require "inst/sequencer_clock"
 require "inst/sequencer_state"
