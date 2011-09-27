@@ -52,9 +52,10 @@ module Inst
     end
     alias_method :remove_destination, :remove_destinations
     
-    # send MIDI data
-    def emit(data)
-      @destinations.each { |o| o.puts(data) } if emit?
+    # send MIDI messages to all destinations
+    def emit(msgs)
+      data = as_data([msgs].flatten)
+      @destinations.each { |o| o.puts(data) }
     end
     
     # output MIDI clock from <em>clock</em> to this emitter's destinations
@@ -68,14 +69,15 @@ module Inst
     def initialize(devices = nil, options = {})
       @destinations = []
       @mute = false
+      @processors = []
+      
       add_destinations(devices) unless devices.nil?   
     end
+     
+    private
     
-    protected
-    
-    # does this emitter have destinations?
-    def emit?
-      !@destinations.nil? && !@destinations.empty?
+    def as_data(msgs)
+      msgs.map { |msg| msg.to_bytes }.flatten
     end
           
   end

@@ -62,7 +62,7 @@ class MIDIEmitterTest < Test::Unit::TestCase
   def test_emit
     output = StubOutput.new
     e = MIDIEmitter.new(output)
-    e.emit([0x90, 0x40, 0x40])
+    e.emit(MIDIMessage.parse(0x90, 0x40, 0x40))
     assert_equal([0x90, 0x40, 0x40], output.cache)
   end
   
