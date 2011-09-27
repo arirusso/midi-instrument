@@ -10,16 +10,16 @@ class SequencerCallbacksTest < Test::Unit::TestCase
   
   def test_rest_when
     output = $test_device[:output]
-    arp = Diamond::Arpeggiator.new(175, :midi => output)
-    arp.rest_when { |state| state.pointer == 0 }
-    assert_equal(true, arp.rest?)
+    seq = MIDISequencer.new(175, :midi => output)
+    seq.rest_when { |state| state.pointer == 0 }
+    assert_equal(true, seq.rest?)
   end
   
   def test_reset_when
     output = $test_device[:output]
-    arp = Diamond::Arpeggiator.new(175, :midi => output)
-    arp.rest_when { |state| state.pointer == 0 }
-    assert_equal(true, arp.rest?)
+    seq = MIDISequencer.new(175, :midi => output)
+    seq.rest_when { |state| state.pointer == 0 }
+    assert_equal(true, seq.rest?)
   end
   
   def test_on_start
