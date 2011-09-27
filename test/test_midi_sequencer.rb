@@ -9,14 +9,23 @@ class MIDISequencerTest < Test::Unit::TestCase
   include TestHelper
   
   def test_mute
-    arp = Arpeggiator.new(175)    
-    assert_equal(false, arp.muted?)       
-    arp.mute
-    assert_equal(true, arp.muted?)
-    arp.unmute
-    assert_equal(false, arp.muted?)
-    arp.toggle_mute
-    assert_equal(true, arp.muted?)
+    seq = MIDISequencer.new(175, :sequence => StubSequence.new)    
+    assert_equal(false, seq.muted?)       
+    seq.mute
+    assert_equal(true, seq.muted?)
+    seq.unmute
+    assert_equal(false, seq.muted?)
+    seq.toggle_mute
+    assert_equal(true, seq.muted?)
+  end
+  
+  def test_output_processor
+    seq = MIDISequencer.new(175)
+    seq.output_process << Process::Limit.new(:channel, 10)
+    results = seq.send(:process_output, [NoteOn["C4"].new(10, 100)])
+    assert_equal(10, results.first.channel)     
+    results = seq.send(:process_output, [NoteOn["C4"].new(0, 100)])
+    assert_equal(10, results.first.channel)
   end
   
 end
