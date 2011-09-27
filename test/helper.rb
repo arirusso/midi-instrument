@@ -27,6 +27,14 @@ module TestHelper
     end
   end 
   
+  class StubSequence
+    
+    def pending_note_offs
+      []
+    end
+    
+  end
+  
   class StubOutput
     
     attr_reader :cache
