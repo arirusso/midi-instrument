@@ -14,18 +14,20 @@ module Inst
     end
     
     # is this instrument master of <em>syncable</em>?
-    def syncs?(syncable)
+    def has_sync_child?(syncable)
       @sync.include?(syncable)
     end
+    alias_method :syncs?, :has_sync_child?
     
     # is this instrument slave to <em>syncable</em>?
-    def synced_to?(syncable)
+    def has_sync_parent?(syncable)
       syncable.syncs?(self)
     end
+    alias_method :synced_to?, :has_sync_parent?
     
     # is this instrument synced with <em>syncable<em> either as master or slave?
     def sync?(syncable)
-      syncs?(syncable) || synced_to?(syncable)
+      has_sync_child?(syncable) || has_sync_parent?(syncable)
     end
         
     # receive sync from <em>syncable</em>

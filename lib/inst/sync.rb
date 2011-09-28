@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 module Inst
   
-  class SyncScheme
+  class Sync
     
-    attr_reader :queue, :syncables
+    attr_reader :queue, :children
     
     def initialize
       @queue ||= {}
-      @syncables ||= []
+      @children ||= []
     end
     
     # sync another <em>syncable</em> to self
@@ -20,27 +20,27 @@ module Inst
     
     # is <em>syncable</em> synced to this instrument?
     def include?(syncable)
-      @syncables.include?(syncable) || @queue.include?(syncable)
+      @children.include?(syncable) || @queue.include?(syncable)
     end
     
     # stop sending sync to <em>syncable</em>
     def remove(syncable)
-      @syncables.delete(syncable)
+      @children.delete(syncable)
       @queue.delete(syncable)
       syncable.unpause_clock
       true
     end
     
     def tick
-      @syncables.each(&:tick)
+      @children.each(&:tick)
     end
     
-    # you don't truly hear sync until syncables are moved from the queue to the syncables set 
+    # you don't truly hear sync until children are moved from the queue to the children set 
     def activate_queued(force_sync_now)
       updated = false
       @queue.each do |syncable, sync_now|
         if sync_now || force_sync_now 
-          @syncables << syncable
+          @children << syncable
           syncable.pause_clock
           @queue.delete(syncable)
           updated = true

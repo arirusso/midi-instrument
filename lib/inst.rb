@@ -20,7 +20,7 @@ require "inst/midi_sequencer"
 require "inst/process_chain"
 require "inst/sequencer_clock"
 require "inst/sequencer_state"
-require "inst/sync_scheme"
+require "inst/sync"
 
 module Inst
   
