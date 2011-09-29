@@ -75,7 +75,7 @@ module Inst
     end
     
     def initialize_syncable(sync_to, sync)
-      @sync = SyncScheme.new
+      @sync = Sync.new
       unless sync_to.nil?
         sync_to = [sync_to].flatten.compact      
         sync_to.each { |syncable| sync_to(syncable) }
