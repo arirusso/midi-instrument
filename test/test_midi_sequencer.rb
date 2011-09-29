@@ -4,7 +4,7 @@ require 'helper'
 
 class MIDISequencerTest < Test::Unit::TestCase
 
-  include Inst
+  include DiamondEngine
   include MIDIMessage
   include TestHelper
   

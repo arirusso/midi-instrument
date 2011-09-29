@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
-module Inst
+module DiamondEngine
 
   class MIDISequencer
     
-    include Inst::SequencerCallbacks  
-    include Inst::Syncable
+    include SequencerCallbacks  
+    include Syncable
     
     extend Forwardable
     

@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-module Inst
+module DiamondEngine
 
   module SequencerCallbacks
     
@@ -20,24 +20,24 @@ module Inst
 
     # bind an event where if it evaluates to true, no messages will be outputted during that
     # step. (however, the tick event will still be fired)
-    # Arpeggiator#sequence is passed to the block
+    # MIDISequencer#sequence is passed to the block
     def rest_when(&block)
       @user_events[:rest_when] = block
     end
     
-    # should the arpeggiator rest on the current step?
+    # should the instrument rest on the current step?
     def rest?
       @user_events[:rest_when].nil? ? false : @user_events[:rest_when].call(@state) 
     end
     
-    # bind an event where the arpeggiator plays a rest on every <em>num<em> beat
+    # bind an event where the instrument plays a rest on every <em>num<em> beat
     # passing in nil will cancel any rest events 
     def rest_every(num)
       num.nil? ? @user_events[:rest_when] = nil : rest_when { |s| s.pointer % num == 0 }
       true
     end
 
-    # bind an event where the arpeggiator resets on every <em>num<em> beat
+    # bind an event where the instrument resets on every <em>num<em> beat
     # passing in nil will cancel any reset events 
     def reset_every(num)
       num.nil? ? @user_events[:reset_when] = nil : reset_when { |s| s.pointer % num == 0 }
@@ -50,12 +50,12 @@ module Inst
     end
 
     # if it evaluates to true, the sequence will go back to step 0
-    # Arpeggiator#sequence is passed to the block  
+    # MIDISequencer#sequence is passed to the block  
     def reset_when(&block)
       @user_events[:reset_when] = block
     end
     
-    # should the arpeggiator reset on the current step?
+    # should the instrument reset on the current step?
     def reset?
       @user_events[:reset_when].nil? ? false : @user_events[:reset_when].call(@state) 
     end

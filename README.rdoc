@@ -1,6 +1,6 @@
-= inst
+= Diamond Engine
 
-Common MIDI instrument/sequencer functionality
+Common functionality for music instruments and sequencers in Ruby
 
 Used by {diamond}[http://github.com/arirusso/diamond] and others in progress
 
@@ -8,7 +8,11 @@ Requires {midi-message}[http://github.com/arirusso/midi-message] and {topaz}[htt
 
 == Installation
 
-gem install inst
+  gem install diamond-engine
+
+== Documentation
+
+* {rdoc}[http://rubydoc.info/github/arirusso/diamond-engine] 
 
 == License
 

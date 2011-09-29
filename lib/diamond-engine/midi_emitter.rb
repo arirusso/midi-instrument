@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-module Inst
+module DiamondEngine
   
   class MIDIEmitter
     

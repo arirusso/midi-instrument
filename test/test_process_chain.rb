@@ -4,7 +4,7 @@ require 'helper'
 
 class ProcessChainTest < Test::Unit::TestCase
 
-  include Inst
+  include DiamondEngine
   include MIDIMessage
   include TestHelper
   
