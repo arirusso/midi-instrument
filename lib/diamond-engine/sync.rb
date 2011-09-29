@@ -31,12 +31,20 @@ module DiamondEngine
       true
     end
     
+    def stop
+      @children.each(&:stop)
+    end
+    
+    def start
+      @children.each(&:start)
+    end
+    
     def tick
       @children.each(&:tick)
     end
     
     # you don't truly hear sync until children are moved from the queue to the children set 
-    def activate_queued(force_sync_now)
+    def activate_queued(force_sync_now = false)
       updated = false
       @queue.each do |syncable, sync_now|
         if sync_now || force_sync_now 

@@ -71,6 +71,7 @@ module DiamondEngine
         @sync.tick
         @sync.activate_queued
       end
+      @events[:after_start] << Proc.new { @sync.start }
       @events[:after_stop] << Proc.new { @sync.stop }
     end
     
