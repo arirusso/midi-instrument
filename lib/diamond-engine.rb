@@ -10,6 +10,7 @@ require "forwardable"
 
 require "midi-message"
 require "topaz"
+require "unimidi"
 
 # modules
 require "diamond-engine/sequencer_callbacks"
