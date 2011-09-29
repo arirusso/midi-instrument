@@ -13,7 +13,8 @@ module DiamondEngine
     
     # run all @processors on <em>msgs</em>
     def process(msgs)
-      @processors.map { |processor| processor.process([msgs].flatten) }.flatten.compact
+      @processors.empty? ? msgs :
+        @processors.map { |processor| processor.process([msgs].flatten) }.flatten.compact
     end
     
     # find the processor with the name <em>name</em>
