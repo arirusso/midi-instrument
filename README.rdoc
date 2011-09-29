@@ -4,7 +4,7 @@ Common functionality for music instruments and sequencers in Ruby
 
 Used by {diamond}[http://github.com/arirusso/diamond] and others in progress
 
-Requires {midi-message}[http://github.com/arirusso/midi-message] and {topaz}[http://github.com/arirusso/topaz] which should install automatically with the gem
+Requires {midi-message}[http://github.com/arirusso/midi-message], {topaz}[http://github.com/arirusso/topaz], and {unimidi}[http://github.com/arirusso/unimidi] which should install automatically with the gem
 
 == Installation
 
