@@ -20,7 +20,9 @@ module DiamondEngine
       
       @events = { 
         :before_start => [],
+        :before_stop => [],
         :before_tick => [],
+        :after_start => [],
         :after_stop => [],
         :after_tick => [],
         :midi_emitter_updated => [],
@@ -57,20 +59,22 @@ module DiamondEngine
     end
     
     # start the clock
-    def start(options = {})      
+    def start(options = {})     
+      @events[:before_start].each(&:call)
       opts = {}
       opts[:background] = true unless options[:focus] || options[:foreground]
-      @events[:before_start].each(&:call)
       trap "SIGINT", proc { 
         stop
         exit
       }
       @clock.start(opts)
+      @events[:after_start].each(&:call)
       true
     end
     
     # stops the clock and sends any remaining MIDI note-off messages that are in the queue
     def stop
+      @events[:before_stop].each(&:call)
       @clock.stop rescue false
       emit_pending_note_offs
       @events[:after_stop].each(&:call)
@@ -106,9 +110,9 @@ module DiamondEngine
     end
     
     def tick
-      @events[:before_tick].each { |event| event.call(pointer) }
-      step
-      @sequence.step(@state.pointer) do |msgs|
+      @events[:before_tick].each { |event| event.call(@state.pointer) }
+      @state.step(@sequence.length)
+      @sequence.at(@state.pointer) do |msgs|
         msgs = process_output(msgs) 
         @emitter.emit(msgs) unless muted? || msgs.nil? || msgs.empty?
         @events[:after_tick].each { |event| event.call(msgs) }
@@ -123,10 +127,6 @@ module DiamondEngine
       end
       @events[:midi_emitter_updated] << handle_updated
       @events[:sync_updated] << handle_updated
-    end
-    
-    def step
-      @state.pointer = (@state.pointer >= (@sequence.length - 1)) ? 0 : @state.pointer + 1
     end
         
   end
