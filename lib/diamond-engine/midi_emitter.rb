@@ -54,8 +54,10 @@ module DiamondEngine
     
     # send MIDI messages to all destinations
     def emit(msgs)
-      data = as_data([msgs].flatten)
-      @destinations.each { |o| o.puts(data) }
+      unless muted?
+        data = as_data([msgs].flatten)
+        @destinations.each { |o| o.puts(data) }
+      end
     end
     
     # output MIDI clock from <em>clock</em> to this emitter's destinations
