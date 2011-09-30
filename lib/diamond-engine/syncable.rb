@@ -9,8 +9,9 @@ module DiamondEngine
     def sync(syncable, options = {})
       unless sync?(syncable)
         @sync.add(syncable, options)       
-        @events[:sync_updated].each(&:call)
+        return true
       end
+      false
     end
     
     # is this instrument master of <em>syncable</em>?
@@ -40,9 +41,10 @@ module DiamondEngine
     def unsync(syncable)
       if sync?(syncable)
         @sync.remove(syncable)
-        @events[:sync_updated].each(&:call)
         syncable.unsync(self)
+        return true
       end
+      false
     end
     
     # stop receiving sync from <em>syncable</em>
@@ -63,13 +65,14 @@ module DiamondEngine
     private
     
     def bind_sync_events
+      @events[:sync_updated] = []
       @events[:before_tick] << Proc.new do |pointer|
         now = pointer.zero? 
-        @sync.activate_queued(now) 
+        @events[:sync_updated].each(&:call) if @sync.activate_queued(now) 
       end
-      @events[:after_tick] << Proc.new do 
+      @events[:after_tick] << Proc.new do |msgs|
+        @events[:sync_updated].each(&:call) if @sync.activate_queued
         @sync.tick
-        @sync.activate_queued
       end
       @events[:after_start] << Proc.new { @sync.start }
       @events[:after_stop] << Proc.new { @sync.stop }

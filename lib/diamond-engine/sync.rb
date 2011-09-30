@@ -54,6 +54,7 @@ module DiamondEngine
           updated = true
         end
       end
+      updated
     end
           
   end

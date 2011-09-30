@@ -27,7 +27,6 @@ module DiamondEngine
         :after_stop => [],
         :after_tick => [],
         :midi_emitter_updated => [],
-        :sync_updated => []
       }   
       @mute = false      
       
@@ -45,6 +44,8 @@ module DiamondEngine
       
       initialize_syncable(options[:sync_to], options[:sync])
       initialize_callbacks
+      
+      bind_events
 
       edit(&block) unless block.nil?
     end
@@ -75,7 +76,7 @@ module DiamondEngine
     def start(options = {})     
       trap "SIGINT", proc { 
         quiet!        
-        exit
+        #exit
       }
       @events[:before_start].each(&:call)
       opts = {}
@@ -139,9 +140,7 @@ module DiamondEngine
     private
 
     def bind_events
-      handle_updated = Proc.new do
-        @emitter.enable_clock_output(@clock)
-      end
+      handle_updated = Proc.new { @emitter.enable_clock_output(@clock) }
       @events[:midi_emitter_updated] << handle_updated
       @events[:sync_updated] << handle_updated
     end
