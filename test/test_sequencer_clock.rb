@@ -18,11 +18,11 @@ class SequencerClockTest < Test::Unit::TestCase
     assert_equal(5, i)
   end
 
-  def test_add_destination
+  def test_add_midi_clock_destination
     o = StubOutput.new
     s = SequencerClock.new(60, 20) { }
     s.start(:background => true)
-    s.add_midi_clock_destinations(o)
+    s.add_midi_destinations(o)
     sleep(1)
     s.stop
     assert_equal(false, o.cache.empty?)

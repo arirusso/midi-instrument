@@ -102,7 +102,7 @@ module DiamondEngine
       @events[:after_stop].each(&:call)
       true            
     end
-    
+
     # add a destination for midi data
     def add_midi_destinations(destinations)
       @emitter.add_destinations(destinations)
