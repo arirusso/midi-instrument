@@ -3,7 +3,7 @@ module DiamondEngine
   
   class MIDIEmitter
     
-    attr_reader :destinations
+    attr_reader :clock_destinations, :destinations
     
     # toggle mute on this emitter
     def toggle_mute
@@ -52,6 +52,17 @@ module DiamondEngine
     end
     alias_method :remove_destination, :remove_destinations
     
+    def add_clock_destinations(destinations, clock)
+      @clock_destinations += destinations
+      @clock_destinations.uniq!
+      refresh_clock(clock)
+    end
+    
+    def remove_clock_destinations(destinations, clock)
+      @clock_destinations.delete_if { |d| destinations.include?(d) }
+      refresh_clock(clock)
+    end
+    
     # send MIDI messages to all destinations
     def emit(msgs)
       unless muted?
@@ -61,14 +72,15 @@ module DiamondEngine
     end
     
     # output MIDI clock from <em>clock</em> to this emitter's destinations
-    def enable_clock_output(clock)
+    def refresh_clock(clock)
       # the clock is actually responsible for emitting clock messages
       # so we just make sure it has a hold of the current destinations
       # for this emitter
-      @destinations.each { |dest| clock.output_midi_clock_to(dest) }
+      @clock_destinations.each { |dest| clock.refresh_midi_clock_destinations(dest) }
     end
         
     def initialize(devices = nil, options = {})
+      @clock_destinations = []
       @destinations = []
       @mute = false
       @processors = []

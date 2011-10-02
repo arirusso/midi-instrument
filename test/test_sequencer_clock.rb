@@ -22,7 +22,7 @@ class SequencerClockTest < Test::Unit::TestCase
     o = StubOutput.new
     s = SequencerClock.new(60, 20) { }
     s.start(:background => true)
-    s.output_midi_clock_to(o)
+    s.add_midi_clock_destinations(o)
     sleep(1)
     s.stop
     assert_equal(false, o.cache.empty?)

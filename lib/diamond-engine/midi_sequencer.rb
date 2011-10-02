@@ -8,14 +8,18 @@ module DiamondEngine
     
     extend Forwardable
     
-    attr_accessor :sequence
+    attr_accessor :sequence, :midi_clock_output
     attr_reader :output_process, :state
+    
     def_delegator :@emitter, :destinations, :midi_destinations
+    def_delegator :@emitter, :clock_destinations, :midi_clock_destinations
     def_delegator :state, :reset_pointer, :reset
     def_delegators :state, :running?
     def_delegators :@clock, :join, :tempo, :tempo=
     def_delegators :@emitter, :muted?, :toggle_mute, :unmute
+    
     alias_method :focus, :join
+    alias_method :midi_clock_output?, :midi_clock_output
 
     def initialize(tempo_or_input, options = {}, &block)
       
@@ -27,13 +31,12 @@ module DiamondEngine
         :after_stop => [],
         :after_tick => [],
         :midi_emitter_updated => [],
-      }   
-      @mute = false      
+      }
       
-      midi_clock_output = options[:midi_clock_output] || false  
+      @midi_clock_output = options[:midi_clock_output] || false  
       devices = [(options[:midi] || [])].flatten
       output_devices = devices.find_all { |d| d.respond_to?(:puts) }.compact  
-      clock_output_devices = midi_clock_output ? output_devices : nil  
+      clock_output_devices = @midi_clock_output ? output_devices : nil  
       resolution = options[:resolution] || 128
 
       @sequence = options[:sequence]
@@ -100,14 +103,16 @@ module DiamondEngine
     # add a destination for midi data
     def add_midi_destinations(destinations)
       @emitter.add_destinations(destinations)
-      @events[:midi_emitter_updated].each(&:call)
+      @emitter.add_clock_destinations(destinations, @clock) if midi_clock_output?
+      @events[:midi_emitter_updated].each { |e| e.call(destinations) }
     end
     alias_method :add_midi_destination, :add_midi_destinations
     
     # remove a destination for midi data
     def remove_midi_destinations(destinations)
       @emitter.remove_destinations(destinations)
-      @events[:midi_emitter_updated].each(&:call)
+      @emitter.remove_clock_destinations(destinations, @clock) if midi_clock_output?
+      @events[:midi_emitter_updated].each { |e| e.call(destinations) }
     end
     alias_method :remove_midi_destination, :remove_midi_destinations
     
@@ -139,9 +144,32 @@ module DiamondEngine
     
     private
 
+    #
+    # The point of this is to add and remove sync'd instruments'
+    # midi clock outputs when they are queued to sync on a future beat
+    #
+    # the handle_updated callback is called on the beat when the sync actually
+    # occurs
+    #
+    # it's not straightforward because midi clock output is handled by
+    # the clock itself and other midi output is handled by the MIDIEmitter
+    # 
+    # Doing it as a callback this way maintains the decoupling of the
+    # MIDIEmitter and Syncable.  The Syncable just calls the @events[:sync_updated]
+    # callbacks and this particular callback tells the emitter to add the outputs
+    # belonging to the syncables to the clock
+    #
+    # if the parent syncable has midi_clock_output disabled, it will not continue
+    # to send clock to its children, even if they had previously been
+    # sending clock before the sync occurred.
+    #
     def bind_events
-      handle_updated = Proc.new { @emitter.enable_clock_output(@clock) }
-      @events[:midi_emitter_updated] << handle_updated
+      handle_updated = Proc.new do |syncables| 
+        if midi_clock_output?
+          outputs = syncables.find_all { |s| s.midi_clock_output? }
+          @emitter.refresh_clock(outputs, @clock)
+        end
+      end
       @events[:sync_updated] << handle_updated
     end
         

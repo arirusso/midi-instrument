@@ -41,6 +41,7 @@ module DiamondEngine
     def unsync(syncable)
       if sync?(syncable)
         @sync.remove(syncable)
+        remove_sync_children(syncable)
         syncable.unsync(self)
         return true
       end
@@ -68,16 +69,22 @@ module DiamondEngine
       @events[:sync_updated] = []
       @events[:before_tick] << Proc.new do |pointer|
         now = pointer.zero? 
-        @events[:sync_updated].each(&:call) if @sync.activate_queued(now) 
+        new_syncables = @sync.activate_queued(now)
+        @events[:sync_updated].each { |e| e.call(new_syncables) } unless new_syncables.empty?
       end
       @events[:after_tick] << Proc.new do |msgs|
-        @events[:sync_updated].each(&:call) if @sync.activate_queued
+        new_syncables = @sync.activate_queued
+        @events[:sync_updated].each { |e| e.call(new_syncables) } unless new_syncables.empty?
         @sync.tick
       end
       @events[:after_start] << Proc.new { @sync.start }
       @events[:after_stop] << Proc.new { @sync.stop }
     end
-    
+
+    def remove_sync_children(syncables)
+      @events[:sync_updated].each { |e| e.call(syncables) }
+    end
+        
     def initialize_syncable(sync_to, sync)
       @sync = Sync.new
       unless sync_to.nil?

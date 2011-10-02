@@ -49,6 +49,7 @@ module DiamondEngine
       @queue.each do |syncable, sync_now|
         if sync_now || force_sync_now 
           @children << syncable
+          syncable.start unless syncable.running?
           syncable.pause_clock
           @queue.delete(syncable)
           updated = true

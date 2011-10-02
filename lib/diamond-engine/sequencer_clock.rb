@@ -6,6 +6,8 @@ module DiamondEngine
     extend Forwardable
     
     def_delegators :@clock, :join, :pause, :start, :stop, :tempo, :tempo=, :unpause
+    def_delegator :@clock, :add_destination, :add_midi_clock_destinations
+    def_delegator :@clock, :remove_destination, :remove_midi_clock_destinations
     
     def initialize(tempo_or_input, resolution, destinations = [], &block)
       @clock = Topaz::Tempo.new(tempo_or_input, :midi => destinations)
@@ -14,9 +16,13 @@ module DiamondEngine
       @clock.on_tick(&block)
     end
     
-    def output_midi_clock_to(destination)
-      @clock.remove_destination(destination)
-      @clock.add_destination(destination)
+    def refresh_midi_outputs(destinations)
+      add_destination(destinations)
+      remove_midi_destinations(destinations)
+    end
+    
+    def midi_destinations
+      @clock.destinations.map(&:output)
     end
            
   end
