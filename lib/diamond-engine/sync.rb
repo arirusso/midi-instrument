@@ -6,8 +6,8 @@ module DiamondEngine
     attr_reader :queue, :children
     
     def initialize
-      @queue ||= {}
-      @children ||= []
+      @queue = {}
+      @children = []
     end
     
     # sync another <em>syncable</em> to self
@@ -40,19 +40,19 @@ module DiamondEngine
     end
     
     def tick
-      @children.each(&:tick)
+      @children.each { |c| c.send(:tick) }
     end
     
     # you don't truly hear sync until children are moved from the queue to the children set 
     def activate_queued(force_sync_now = false)
-      updated = false
+      updated = []
       @queue.each do |syncable, sync_now|
         if sync_now || force_sync_now 
           @children << syncable
           syncable.start unless syncable.running?
           syncable.pause_clock
           @queue.delete(syncable)
-          updated = true
+          updated << syncable
         end
       end
       updated

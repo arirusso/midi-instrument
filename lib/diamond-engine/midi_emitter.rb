@@ -55,12 +55,12 @@ module DiamondEngine
     def add_clock_destinations(destinations, clock)
       @clock_destinations += destinations
       @clock_destinations.uniq!
-      refresh_clock(clock)
+      clock.add_midi_destinations(destinations)
     end
     
     def remove_clock_destinations(destinations, clock)
       @clock_destinations.delete_if { |d| destinations.include?(d) }
-      refresh_clock(clock)
+      clock.remove_midi_destinations(destinations)
     end
     
     # send MIDI messages to all destinations
@@ -69,14 +69,6 @@ module DiamondEngine
         data = as_data([msgs].flatten)
         @destinations.each { |o| o.puts(data) }
       end
-    end
-    
-    # output MIDI clock from <em>clock</em> to this emitter's destinations
-    def refresh_clock(clock)
-      # the clock is actually responsible for emitting clock messages
-      # so we just make sure it has a hold of the current destinations
-      # for this emitter
-      @clock_destinations.each { |dest| clock.refresh_midi_clock_destinations(dest) }
     end
         
     def initialize(devices = nil, options = {})
