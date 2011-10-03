@@ -4,7 +4,15 @@ Common functionality for music instruments and sequencers in Ruby
 
 Used by {diamond}[http://github.com/arirusso/diamond] and others in progress
 
-Requires {midi-message}[http://github.com/arirusso/midi-message], {topaz}[http://github.com/arirusso/topaz], and {unimidi}[http://github.com/arirusso/unimidi] which should install automatically with the gem
+Requires these gems:
+
+{eventmachine}[http://github.com/eventmachine/eventmachine]
+{midi-message}[http://github.com/arirusso/midi-message]
+{osc-ruby}[https://github.com/aberant/osc-ruby]
+{topaz}[http://github.com/arirusso/topaz]
+{unimidi}[http://github.com/arirusso/unimidi] 
+
+they should install automatically when you install the diamond-engine gem
 
 == Installation
 
