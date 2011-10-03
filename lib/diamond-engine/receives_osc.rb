@@ -3,6 +3,10 @@ module DiamondEngine
   
   module ReceivesOSC
     
+    def add_osc_method(*a, &block)
+      @osc_server.add_method(*a, &block)
+    end
+    
     private
     
     def initialize_osc_server(port, map, options = {})

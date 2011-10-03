@@ -3,6 +3,10 @@ module DiamondEngine
   
   class OSCServer
     
+    extend Forwardable
+    
+    def_delegators :@server, :add_method
+    
     def initialize(instrument, port, map, options = {})
       @server = OSC::EMServer.new( 8000 )
       load_osc_map(instrument, map)
