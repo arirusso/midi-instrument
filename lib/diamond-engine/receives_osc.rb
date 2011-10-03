@@ -3,8 +3,8 @@ module DiamondEngine
   
   module ReceivesOSC
     
-    def add_osc_method(*a, &block)
-      @osc_server.add_method(*a, &block)
+    def add_osc_method(pattern, &block)
+      @osc_server.add_method(self, pattern, &block)
     end
     
     private
