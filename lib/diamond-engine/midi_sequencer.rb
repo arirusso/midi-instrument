@@ -3,7 +3,8 @@ module DiamondEngine
 
   class MIDISequencer
     
-    include SequencerCallbacks  
+    include SequencerInternalCallbacks
+    include SequencerUserCallbacks  
     include Syncable
     
     extend Forwardable
@@ -22,18 +23,7 @@ module DiamondEngine
     alias_method :midi_clock_output?, :midi_clock_output
 
     def initialize(tempo_or_input, options = {}, &block)
-      
-      @events = { 
-        :before_start => [],
-        :before_stop => [],
-        :before_tick => [],
-        :after_start => [],
-        :after_stop => [],
-        :after_tick => [],
-        :midi_emitter_updated => [],
-      }
-      
-     
+          
       devices = [(options[:midi] || [])].flatten
       output_devices = devices.find_all { |d| d.respond_to?(:puts) }.compact  
       resolution = options[:resolution] || 128
@@ -48,8 +38,9 @@ module DiamondEngine
       @emitter = MIDIEmitter.new(output_devices, options)
       @state = SequencerState.new
       
+      initialize_internal_callbacks
+      initialize_user_callbacks
       initialize_syncable(options[:sync_to], options[:sync])
-      initialize_callbacks
       
       bind_events
 
@@ -84,22 +75,22 @@ module DiamondEngine
         quiet!        
         exit
       }
-      @events[:before_start].each(&:call)
+      @internal_event[:before_start].each(&:call)
       opts = {}
       opts[:background] = true unless options[:focus] || options[:foreground]
-      @events[:after_start].each(&:call)
+      @internal_event[:after_start].each(&:call)
       @state.start
       @clock.start(opts) unless options[:suppress_clock]
       true
     end
     
     # stops the clock and sends any remaining MIDI note-off messages that are in the queue
-    def stop
-      @events[:before_stop].each(&:call)
+    def stop(options = {})
+      @internal_event[:before_stop].each(&:call)
       @clock.stop rescue false
       @state.stop
       emit_pending_note_offs
-      @events[:after_stop].each(&:call)
+      @internal_event[:after_stop].each(&:call)
       true            
     end
 
@@ -107,7 +98,7 @@ module DiamondEngine
     def add_midi_destinations(destinations)
       @emitter.add_destinations(destinations)
       @emitter.add_clock_destinations(destinations, @clock) if midi_clock_output?
-      @events[:midi_emitter_updated].each { |e| e.call(destinations) }
+      @internal_event[:midi_emitter_updated].each { |e| e.call(destinations) }
     end
     alias_method :add_midi_destination, :add_midi_destinations
     
@@ -115,7 +106,7 @@ module DiamondEngine
     def remove_midi_destinations(destinations)
       @emitter.remove_destinations(destinations)
       @emitter.remove_clock_destinations(destinations, @clock) if midi_clock_output?
-      @events[:midi_emitter_updated].each { |e| e.call(destinations) }
+      @internal_event[:midi_emitter_updated].each { |e| e.call(destinations) }
     end
     alias_method :remove_midi_destination, :remove_midi_destinations
     
@@ -134,14 +125,14 @@ module DiamondEngine
     end
     
     def tick
-      @events[:before_tick].each { |event| event.call(@state.pointer) }
+      @internal_event[:before_tick].each { |event| event.call(@state.pointer) }
       @state.step(@sequence.length)
       @sequence.at(@state.pointer) do |msgs|
         unless msgs.nil? || msgs.empty?
           msgs = process_output(msgs) 
           @emitter.emit(msgs)
         end
-        @events[:after_tick].each { |event| event.call(msgs) }
+        @internal_event[:after_tick].each { |event| event.call(msgs) }
       end
     end
     
@@ -158,7 +149,7 @@ module DiamondEngine
     # the clock itself and other midi output is handled by the MIDIEmitter
     # 
     # Doing it as a callback this way maintains the decoupling of the
-    # MIDIEmitter and Syncable.  The Syncable just calls the @events[:sync_updated]
+    # MIDIEmitter and Syncable.  The Syncable just calls the @internal_event[:sync_updated]
     # callbacks and this particular callback tells the emitter to add the outputs
     # belonging to the syncables to the clock
     #
@@ -167,13 +158,13 @@ module DiamondEngine
     # sending clock before the sync occurred.
     #
     def bind_events
-      @events[:sync_added] << Proc.new do |syncables| 
+      @internal_event[:sync_added] << Proc.new do |syncables| 
         if midi_clock_output?
           outputs = syncables.map { |s| s.midi_clock_destinations if s.midi_clock_output? }.compact
           @emitter.add_clock_destinations(outputs, @clock)
         end
       end
-      @events[:sync_removed] << Proc.new do |syncables| 
+      @internal_event[:sync_removed] << Proc.new do |syncables| 
         if midi_clock_output?
           outputs = syncables.map { |s| s.midi_clock_destinations if s.midi_clock_output? }.compact
           @emitter.remove_clock_destinations(outputs, @clock)

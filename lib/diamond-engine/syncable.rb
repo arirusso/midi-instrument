@@ -66,25 +66,25 @@ module DiamondEngine
     private
     
     def bind_sync_events
-      @events[:sync_added] = []
-      @events[:sync_removed] = []
-      @events[:before_tick] << Proc.new do |pointer|
+      @internal_event[:sync_added] = []
+      @internal_event[:sync_removed] = []
+      @internal_event[:before_tick] << Proc.new do |pointer|
         now = pointer.zero? 
         new_syncables = @sync.activate_queued(now)
         new_syncables.each { |s| s.start(:suppress_clock => true) unless s.running? }
-        @events[:sync_added].each { |e| e.call(new_syncables) } unless new_syncables.empty?
+        @internal_event[:sync_added].each { |e| e.call(new_syncables) } unless new_syncables.empty?
       end
-      @events[:after_tick] << Proc.new do |msgs|
+      @internal_event[:after_tick] << Proc.new do |msgs|
         new_syncables = @sync.activate_queued
-        @events[:sync_added].each { |e| e.call(new_syncables) } unless new_syncables.empty?
+        @internal_event[:sync_added].each { |e| e.call(new_syncables) } unless new_syncables.empty?
         @sync.tick
       end
-      @events[:after_start] << Proc.new { @sync.start }
-      @events[:after_stop] << Proc.new { @sync.stop }
+      @internal_event[:after_start] << Proc.new { @sync.start }
+      @internal_event[:after_stop] << Proc.new { @sync.stop }
     end
 
     def remove_sync_children(syncables)
-      @events[:sync_removed].each { |e| e.call(syncables) }
+      @internal_event[:sync_removed].each { |e| e.call(syncables) }
     end
         
     def initialize_syncable(sync_to, sync)
