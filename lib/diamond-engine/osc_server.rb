@@ -11,7 +11,7 @@ module DiamondEngine
     def start(options = {})
       background = options[:background] === true
       if background
-        Thread.new do
+        @thread = Thread.new do
           @server.run 
         end
       else
@@ -20,20 +20,21 @@ module DiamondEngine
     end
     
     def stop(options = {})
-      @server.stop
+      @thread.kill
     end
     
     private
     
-    def compute_value(value, range)
+    def compute_value(value, range, options = {})
       length = range.last - range.first
-      range.first + (value * length).to_i
+      computed_value = range.first + (value * length.to_f)
+      !options[:type].nil? && options[:type].to_s == "float" ? computed_value : computed_value.to_i
     end
     
     def add_mapping(instrument, mapping)
       @server.add_method(mapping[:pattern]) do | message |
         raw_value = message.to_a.first
-        computed_value = compute_value(raw_value, mapping[:range])
+        computed_value = compute_value(raw_value, mapping[:range], :type => mapping[:type])
         instrument.send(mapping[:property], computed_value) if instrument.respond_to?(mapping[:property])
         #p "set #{mapping[:property]} to #{computed_value}"
       end
