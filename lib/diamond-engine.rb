@@ -15,6 +15,7 @@ require "topaz"
 require "unimidi"
 
 # modules
+require "diamond-engine/receives_midi"
 require "diamond-engine/receives_osc"
 require "diamond-engine/sequencer_internal_callbacks"
 require "diamond-engine/sequencer_user_callbacks"
@@ -22,6 +23,7 @@ require "diamond-engine/syncable"
 
 # classes
 require "diamond-engine/midi_emitter"
+require "diamond-engine/midi_listener"
 require "diamond-engine/midi_sequencer"
 require "diamond-engine/osc_server"
 require "diamond-engine/process_chain"
