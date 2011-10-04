@@ -3,16 +3,16 @@ module DiamondEngine
   
   module ReceivesOSC
     
-    def add_osc_method(pattern, &block)
+    def receive_osc(pattern, &block)
       @osc_server.add_method(self, pattern, &block)
     end
     
     private
     
-    def initialize_osc_server(port, map, options = {})
+    def initialize_osc_listener(port, map, options = {})
       @osc_server = OSCServer.new(self, port, map)
-      @internal_event[:before_start] << Proc.new { @osc_server.start(:background => true) }
-      @internal_event[:before_stop] << Proc.new { @osc_server.stop }
+      @osc_server.start(:background => true) unless !options[:start_osc].nil? && options[:start_osc] == false 
+      #@internal_event[:before_start] << Proc.new { @osc_server.start(:background => true) }
     end
           
   end

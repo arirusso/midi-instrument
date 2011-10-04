@@ -3,9 +3,10 @@ module DiamondEngine
   
   class OSCServer
     
-    def initialize(instrument, port, map, options = {})
+    def initialize(instrument, port, options = {})
+      @running = false
       @server = OSC::EMServer.new( 8000 )
-      load_osc_map(instrument, map)
+      load_osc_map(instrument, options[:map]) unless options[:map].nil?
     end
     
     def start(options = {})
@@ -17,10 +18,16 @@ module DiamondEngine
       else
         @server.run 
       end
+      @running = true
+    end
+    
+    def running? 
+      @running
     end
     
     def stop(options = {})
       @thread.kill
+      @running = false
     end
     
     def add_method(instrument, pattern, &block)
@@ -32,7 +39,7 @@ module DiamondEngine
     def compute_value(value, range, options = {})
       length = range.last - range.first
       computed_value = range.first + (value * length.to_f)
-      !options[:type].nil? && options[:type].to_s == "float" ? computed_value : computed_value.to_i
+      !options[:type].nil? && options[:type].to_s.downcase == "float" ? computed_value : computed_value.to_i
     end
     
     def add_mapping(instrument, mapping)
