@@ -28,8 +28,7 @@ module DiamondEngine
     
     def add_source(source)
       sources = [source].flatten
-      @listener.sources += sources
-      @listener.sources.uniq!
+      @listener.add_input(sources)
       @sources += sources
       @sources.uniq!
     end
@@ -38,7 +37,7 @@ module DiamondEngine
     def remove_source(source)
       sources = [source].flatten
       @sources.delete_if { |s| sources.include?(s) }
-      @listener.sources.delete_if { |s| sources.include?(s) }
+      @listener.remove_input(sources)
     end
     alias_method :remove_sources, :remove_source
     
