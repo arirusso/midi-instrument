@@ -23,8 +23,7 @@ module DiamondEngine
     
     private
     
-    def initialize_midi_receiver(inputs, options = {})
-      map = options[:map]
+    def initialize_midi_receiver(inputs, map)
       @midi_listener = MIDIListener.new(self, inputs, :map => map)
     end
           

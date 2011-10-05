@@ -3,74 +3,72 @@ module DiamondEngine
   
   class MIDIListener
     
+    extend Forwardable
+    
     attr_reader :sources
     
+    def_delegators :@listener, :stop
+    def_delegator :@listener, :remove_listener, :delete_event
+    
     def initialize(instrument, sources, options = {})
-      @listeners = {}
       @sources = sources
+      @listener = MIDIEye::Listener.new(sources)
       load_midi_map(instrument, options[:map]) unless options[:map].nil?
       start
     end
     
     def receive_midi(instrument, name, match = {}, &block)
-      listener = MIDIEye::Listener.new(@sources)
-      listener.listen_for(:class => MIDIMessage::NoteOn) do |event|
-        yield(instrument, event)
+      match[:listener_name] = name    
+      @listener.listen_for(match) do |event|
+        block.call(instrument, event)
       end
-      listener.start(:background => true)
-      @listeners[name] = listener
+      @listener.start(:background => true)
       true
-    end
-    
-    def remove_listener(name)
-      @listeners.delete(name)
     end
     
     def add_source(source)
       sources = [source].flatten
+      @listener.sources += sources
+      @listener.sources.uniq!
       @sources += sources
-      @listeners.values.each do |l|
-        sources.each do |s|
-          l.sources.push(s) unless l.sources.include?(s)
-        end
-      end     
+      @sources.uniq!
     end
     alias_method :add_sources, :add_source
     
     def remove_source(source)
       sources = [source].flatten
       @sources.delete_if { |s| sources.include?(s) }
-      @listeners.values.each do |l| 
-        l.sources.delete_if { |s| sources.include?(s) }
-      end
+      @listener.sources.delete_if { |s| sources.include?(s) }
     end
     alias_method :remove_sources, :remove_source
     
     protected
     
     def start
-      @listeners.values.each { |l| l.start(:background => true) }
-    end
-    
-    def stop
-      @listeners.values.each(&:stop)
+      @listener.start(:background => true)
     end
     
     def load_midi_map(instrument, map)
-      receive_midi(:class => map[:class]) do |event|
-        msg = event[:message]
-        raw_value = msg.send(map[:index])
-        computed_value = map[:input_range].nil? ? raw_value : compute_value(value, input_range, range, :type => map[:type])
-        instrument.send(map[:property], computed_value)
+      map.each do |item|
+        name = "#{item[:property]}_#{map.index(item)}".to_sym
+        receive_midi(instrument, name, item[:match]) do |instrument, event|
+          Thread.abort_on_exception = true
+          msg = event[:message]
+          raw_value = msg.send(item[:using])
+          computed_value = item[:new_range].nil? ? raw_value : compute_value(raw_value, item[:original_range], item[:new_range], :type => item[:type])
+          instrument.send(item[:property], computed_value)
+        end
       end
     end
     
-    def compute_value(value, input_range, range, options = {})
-      range_length = range.last - range.first
-      input_range_length = input_range.last - input_range.first
-      factor = range_length / input_range_length
-      computed_value = value.to_f * factor.to_f
-      !options[:type].nil? && options[:type].to_s.downcase == "float" ? computed_value : computed_value.to_i
+    def compute_value(raw_value, old_range, new_range, options = {})
+      new_range_length = new_range.last - new_range.first
+      old_range_length = old_range.last - old_range.first
+      factor = new_range_length.to_f / old_range_length.to_f
+      computed_value = raw_value.to_f * factor.to_f
+      computed_value = computed_value + new_range.first # offset
+      float_requested = !options[:type].nil? && options[:type].to_s.downcase == "float"
+      float_requested ? computed_value : computed_value.to_i
     end
           
   end
