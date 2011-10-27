@@ -47,6 +47,11 @@ module DiamondEngine
       edit(&block) unless block.nil?
     end
     
+    # toggle start/stop
+    def toggle_start
+      running? ? stop : start
+    end
+    
     # stops and sends all note offs
     def quiet!
       stop
