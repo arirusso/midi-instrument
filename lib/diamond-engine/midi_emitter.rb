@@ -3,21 +3,12 @@ module DiamondEngine
   
   class MIDIEmitter
     
+    attr_accessor :mute
     attr_reader :clock_destinations, :destinations
     
     # toggle mute on this emitter
     def toggle_mute
-      muted? ? unmute : mute
-    end
-    
-    # mute this emitter
-    def mute
-      @mute = true
-    end
-    
-    # unmute this emitter
-    def unmute
-      @mute = false
+      @mute = !@mute
     end
     
     # is this emitter muted?

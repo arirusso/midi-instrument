@@ -17,10 +17,11 @@ module DiamondEngine
     def_delegator :state, :reset_pointer, :reset
     def_delegators :state, :running?
     def_delegators :@clock, :join, :tempo, :tempo=
-    def_delegators :@emitter, :muted?, :toggle_mute, :unmute
+    def_delegators :@emitter, :muted?, :toggle_mute, :mute, :mute=
     
     alias_method :focus, :join
     alias_method :midi_clock_output?, :midi_clock_output
+    alias_method :running, :running?
 
     def initialize(tempo_or_input, options = {}, &block)
           
@@ -72,6 +73,10 @@ module DiamondEngine
     # open the instrument for editing
     def edit(&block)
       self.instance_eval(&block)
+    end
+    
+    def running=(val)
+      val ? start : stop
     end
     
     # start the clock

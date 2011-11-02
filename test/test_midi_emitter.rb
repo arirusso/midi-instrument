@@ -20,13 +20,13 @@ class MIDIEmitterTest < Test::Unit::TestCase
   def test_mute_unmute
     e = MIDIEmitter.new
     assert_equal(false, e.muted?)
-    e.mute
+    e.mute = true
     assert_equal(true, e.muted?)
-    e.mute
+    e.mute = true
     assert_equal(true, e.muted?)
-    e.unmute
+    e.mute = false
     assert_equal(false, e.muted?)    
-    e.unmute
+    e.mute = false
     assert_equal(false, e.muted?)  
   end
   

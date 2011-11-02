@@ -11,9 +11,9 @@ class MIDISequencerTest < Test::Unit::TestCase
   def test_mute
     seq = MIDISequencer.new(175, :sequence => StubSequence.new)    
     assert_equal(false, seq.muted?)       
-    seq.mute
+    seq.mute = true
     assert_equal(true, seq.muted?)
-    seq.unmute
+    seq.mute = false
     assert_equal(false, seq.muted?)
     seq.toggle_mute
     assert_equal(true, seq.muted?)
