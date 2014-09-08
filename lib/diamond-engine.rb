@@ -1,13 +1,13 @@
-#!/usr/bin/env ruby
-#
+
 # Diamond Engine
 # Common functionality for music instruments and sequencers in Ruby
-# (c)2011 Ari Russo and licensed under the Apache 2.0 License
+# (c)2011-2014 Ari Russo
+# Licensed under the Apache 2.0 License
 # 
 
 # libs
 require "forwardable"
-
+require "midi-fx"
 require "midi-message"
 require "topaz"
 require "unimidi"
