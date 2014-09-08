@@ -54,12 +54,12 @@ module DiamondEngine
     def add_clock_destinations(destinations, clock)
       @clock_destinations += destinations
       @clock_destinations.uniq!
-      clock.add_midi_destinations(destinations)
+      clock.add_destination(destinations)
     end
     
     def remove_clock_destinations(destinations, clock)
       @clock_destinations.delete_if { |destination| destinations.include?(destination) }
-      clock.remove_midi_destinations(destinations)
+      clock.remove_destination(destinations)
     end
     
     # Send MIDI messages to all destinations

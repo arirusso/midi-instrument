@@ -34,7 +34,7 @@ module DiamondEngine
       @name = options[:name]
       @sequence = options[:sequence]
       @output_process = ProcessChain.new
-      @clock = SequencerClock.new(tempo_or_input, resolution, clock_output_devices) { tick }
+      initialize_clock(tempo_or_input, resolution, clock_output_devices)
       @emitter = MIDIEmitter.new(output_devices, options)
       @state = SequencerState.new
       
@@ -127,8 +127,6 @@ module DiamondEngine
       @emitter.emit(messages) unless messages.empty?
     end
     
-    protected
-    
     def process_output(messages)
       @output_process.process(messages)
     end
@@ -146,6 +144,12 @@ module DiamondEngine
     end
     
     private
+
+    def initialize_clock(tempo_or_input, resolution, clock_output_devices)
+      @clock = Topaz::Tempo.new(tempo_or_input, :midi => clock_output_devices) 
+      @clock.interval = @clock.interval * (resolution / @clock.interval)
+      @clock.on_tick { tick }
+    end
 
     #
     # The point of this is to add and remove sync'd instruments'

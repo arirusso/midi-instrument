@@ -25,7 +25,6 @@ require "diamond-engine/midi_emitter"
 require "diamond-engine/midi_listener"
 require "diamond-engine/midi_sequencer"
 require "diamond-engine/process_chain"
-require "diamond-engine/sequencer_clock"
 require "diamond-engine/sequencer_state"
 require "diamond-engine/sync"
 
