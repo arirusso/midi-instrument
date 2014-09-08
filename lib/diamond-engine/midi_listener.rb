@@ -57,8 +57,8 @@ module DiamondEngine
 
     def handle_event(instrument, event, item)
       Thread.abort_on_exception = true
-      msg = event[:message]
-      raw_value = msg.send(item[:using])
+      message = event[:message]
+      raw_value = message.send(item[:using])
       value = if item[:new_range].nil?
         raw_value 
       else
