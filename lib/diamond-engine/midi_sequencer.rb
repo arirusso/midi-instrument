@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 module DiamondEngine
 
   class MIDISequencer
@@ -26,11 +25,11 @@ module DiamondEngine
     def initialize(tempo_or_input, options = {}, &block)
           
       devices = [(options[:midi] || [])].flatten
-      output_devices = devices.find_all { |d| d.respond_to?(:puts) }.compact  
+      output_devices = devices.select { |device| device.respond_to?(:puts) }  
       resolution = options[:resolution] || 128
       
-      @midi_clock_output = options[:midi_clock_output] || false  
-      clock_output_devices = @midi_clock_output ? output_devices : nil  
+      @midi_clock_output = options.fetch(:midi_clock_output, false)
+      clock_output_devices = output_devices if @midi_clock_output  
      
       @name = options[:name]
       @sequence = options[:sequence]
@@ -72,7 +71,7 @@ module DiamondEngine
     
     # open the instrument for editing
     def edit(&block)
-      self.instance_eval(&block)
+      instance_eval(&block)
     end
     
     def running=(val)
@@ -108,7 +107,7 @@ module DiamondEngine
     def add_midi_destinations(destinations)
       @emitter.add_destinations(destinations)
       @emitter.add_clock_destinations(destinations, @clock) if midi_clock_output?
-      @internal_event[:midi_emitter_updated].each { |e| e.call(destinations) }
+      @internal_event[:midi_emitter_updated].each { |event| event.call(destinations) }
     end
     alias_method :add_midi_destination, :add_midi_destinations
     
@@ -116,7 +115,7 @@ module DiamondEngine
     def remove_midi_destinations(destinations)
       @emitter.remove_destinations(destinations)
       @emitter.remove_clock_destinations(destinations, @clock) if midi_clock_output?
-      @internal_event[:midi_emitter_updated].each { |e| e.call(destinations) }
+      @internal_event[:midi_emitter_updated].each { |event| event.call(destinations) }
     end
     alias_method :remove_midi_destination, :remove_midi_destinations
     
@@ -124,25 +123,25 @@ module DiamondEngine
     
     # send all of the note off messages in the queue
     def emit_pending_note_offs
-      msgs = @sequence.pending_note_offs
-      @emitter.emit(msgs) unless msgs.empty?
+      messages = @sequence.pending_note_offs
+      @emitter.emit(messages) unless messages.empty?
     end
     
     protected
     
-    def process_output(msgs)
-      @output_process.process(msgs)
+    def process_output(messages)
+      @output_process.process(messages)
     end
     
     def tick
       @internal_event[:before_tick].each { |event| event.call(@state.pointer) }
       @state.step(@sequence.length)
-      @sequence.at(@state.pointer) do |msgs|
-        unless msgs.nil? || msgs.empty?
-          msgs = process_output(msgs) 
-          @emitter.emit(msgs)
+      @sequence.at(@state.pointer) do |messages|
+        unless messages.nil? || messages.empty?
+          messages = process_output(messages) 
+          @emitter.emit(messages)
         end
-        @internal_event[:after_tick].each { |event| event.call(msgs) }
+        @internal_event[:after_tick].each { |event| event.call(messages) }
       end
     end
     
@@ -170,16 +169,18 @@ module DiamondEngine
     def bind_events
       @internal_event[:sync_added] << Proc.new do |syncables| 
         if midi_clock_output?
-          outputs = syncables.map { |s| s.midi_clock_destinations if s.midi_clock_output? }.compact
-          @emitter.add_clock_destinations(outputs, @clock)
+          @emitter.add_clock_destinations(midi_clock_outputs, @clock)
         end
       end
       @internal_event[:sync_removed] << Proc.new do |syncables| 
         if midi_clock_output?
-          outputs = syncables.map { |s| s.midi_clock_destinations if s.midi_clock_output? }.compact
-          @emitter.remove_clock_destinations(outputs, @clock)
+          @emitter.remove_clock_destinations(midi_clock_outputs, @clock)
         end
       end
+    end
+
+    def midi_clock_outputs
+      syncables.select(&:midi_clock_output?).map(&:midi_clock_destinations)
     end
         
   end
