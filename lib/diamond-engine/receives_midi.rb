@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 module DiamondEngine
   
   module ReceivesMIDI
