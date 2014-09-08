@@ -15,7 +15,6 @@ require "unimidi"
 
 # modules
 require "diamond-engine/receives_midi"
-require "diamond-engine/sequencer_internal_callbacks"
 require "diamond-engine/sequencer_user_callbacks"
 require "diamond-engine/syncable"
 

@@ -2,7 +2,6 @@ module DiamondEngine
 
   class MIDISequencer
     
-    include SequencerInternalCallbacks
     include SequencerUserCallbacks  
     include Syncable
     
@@ -38,7 +37,15 @@ module DiamondEngine
       @emitter = MIDIEmitter.new(output_devices, options)
       @state = SequencerState.new
       
-      initialize_internal_callbacks
+      @internal_event = { 
+        :before_start => [],
+        :before_stop => [],
+        :before_tick => [],
+        :after_start => [],
+        :after_stop => [],
+        :after_tick => [],
+        :midi_emitter_updated => [],
+      }
       initialize_user_callbacks
       initialize_syncable(options[:sync_to], options[:sync])
       
