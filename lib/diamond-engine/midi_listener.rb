@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 module DiamondEngine
   
   class MIDIListener
@@ -19,9 +18,7 @@ module DiamondEngine
     
     def receive_midi(instrument, name, match = {}, &block)
       match[:listener_name] = name    
-      @listener.listen_for(match) do |event|
-        block.call(instrument, event)
-      end
+      @listener.listen_for(match) { |event| yield(instrument, event) }
       @listener.start(:background => true)
       true
     end
@@ -36,7 +33,7 @@ module DiamondEngine
     
     def remove_source(source)
       sources = [source].flatten
-      @sources.delete_if { |s| sources.include?(s) }
+      @sources.delete_if { |source| sources.include?(source) }
       @listener.remove_input(sources)
     end
     alias_method :remove_sources, :remove_source
@@ -49,27 +46,33 @@ module DiamondEngine
     
     def load_midi_map(instrument, map)
       map.each do |item|
-        name = "#{item[:property]}_#{map.index(item)}".to_sym
+        name = "#{item[:property]}_#{map.index(item)}"
         receive_midi(instrument, name, item[:match]) do |instrument, event|
-          Thread.abort_on_exception = true
-          msg = event[:message]
-          raw_value = msg.send(item[:using])
-          computed_value = item[:new_range].nil? ? raw_value : compute_value(raw_value, item[:original_range], item[:new_range], :type => item[:type])
-          instrument.send(item[:property], computed_value)
+          handle_event(instrument, event, item)
         end
       end
     end
-    
-    def compute_value(raw_value, old_range, new_range, options = {})
-      new_range_length = new_range.last - new_range.first
-      old_range_length = old_range.last - old_range.first
-      factor = new_range_length.to_f / old_range_length.to_f
-      computed_value = raw_value.to_f * factor.to_f
-      computed_value = computed_value + new_range.first # offset
-      float_requested = !options[:type].nil? && options[:type].to_s.downcase == "float"
-      float_requested ? computed_value : computed_value.to_i
+
+    private
+
+    def handle_event(instrument, event, item)
+      Thread.abort_on_exception = true
+      msg = event[:message]
+      raw_value = msg.send(item[:using])
+      value = if item[:new_range].nil?
+        raw_value 
+      else
+        scale_value(raw_value, item)
+      end
+      instrument.send(item[:property], value)
     end
-          
+
+    def scale_event_value(raw_value, map)
+      scaled = Scale.transform(raw_value).from(map[:original_range]).to(map[:new_range])
+      scaled = scaled.to_i unless map[:type] == "float"
+      scaled
+    end
+              
   end
   
 end

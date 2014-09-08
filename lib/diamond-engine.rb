@@ -6,6 +6,7 @@
 # 
 
 # libs
+require "scale"
 require "forwardable"
 require "midi-fx"
 require "midi-message"
