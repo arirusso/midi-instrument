@@ -1,10 +1,13 @@
-#!/usr/bin/env ruby
 module DiamondEngine
   
   class ProcessChain
     
-    def method_missing(m, *a, &b)
-      @processors.respond_to?(m) ? @processors.send(m, *a, &b) : super
+    def method_missing(method, *args, &block)
+      if @processors.respond_to?(method)
+        @processors.send(method, *args, &block)
+      else
+        super
+      end
     end
     
     def initialize
@@ -12,9 +15,15 @@ module DiamondEngine
     end
     
     # run all @processors on <em>msgs</em>
-    def process(msgs)
-      @processors.empty? ? msgs :
-        @processors.map { |processor| processor.process([msgs].flatten) }.flatten.compact
+    def process(messages)
+      if @processors.empty?
+        messages
+      else
+        processed = @processors.map do |processor|
+          [messages].flatten.map { |message| processor.process(message) }
+        end
+        processed.flatten.compact
+      end
     end
     
     # find the processor with the name <em>name</em>
