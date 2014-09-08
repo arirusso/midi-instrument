@@ -19,6 +19,7 @@ require "diamond-engine/sequencer_user_callbacks"
 require "diamond-engine/syncable"
 
 # classes
+require "diamond-engine/event/note"
 require "diamond-engine/midi_emitter"
 require "diamond-engine/midi_listener"
 require "diamond-engine/midi_sequencer"
