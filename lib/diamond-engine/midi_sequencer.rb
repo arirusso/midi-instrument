@@ -23,7 +23,6 @@ module DiamondEngine
 
       @name = options[:name]
       @sequence = options[:sequence]
-      @output_process = ProcessChain.new
 
       initialize_clock(tempo_or_input, options.fetch(:resolution, 128), clock_options)
       @emitter = MIDIEmitter.new(output_devices)

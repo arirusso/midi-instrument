@@ -12,14 +12,5 @@ class DiamondEngine::MIDISequencerTest < Test::Unit::TestCase
     seq.toggle_mute
     assert_equal(true, seq.muted?)
   end
-  
-  def test_output_processor
-    seq = DiamondEngine::MIDISequencer.new(175)
-    seq.output_process << MIDIFX::Limit.new(:channel, 10)
-    results = seq.output_process.process(MIDIMessage::NoteOn["C4"].new(10, 100))
-    assert_equal(10, results.first.channel)     
-    results = seq.output_process.process(MIDIMessage::NoteOn["C4"].new(0, 100))
-    assert_equal(10, results.first.channel)
-  end
-  
+    
 end
