@@ -26,7 +26,6 @@ module DiamondEngine
       @output_process = ProcessChain.new
 
       initialize_clock(tempo_or_input, options.fetch(:resolution, 128), clock_options)
-
       @emitter = MIDIEmitter.new(output_devices)
       @state = SequencerState.new
       @events = Events.new
@@ -125,7 +124,7 @@ module DiamondEngine
       end
       @events.tick.call(messages, @state) unless @events.tick.nil? 
       reset if @state.reset?(&@events.reset_when)
-      Sync[self].activate_queued
+      Sync[self].activate_queued unless Sync[self].nil?
       messages
     end
 
