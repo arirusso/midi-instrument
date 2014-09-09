@@ -1,20 +1,22 @@
 module DiamondEngine
   
   class ProcessChain
-    
-    def method_missing(method, *args, &block)
-      if @processors.respond_to?(method)
-        @processors.send(method, *args, &block)
-      else
-        super
-      end
-    end
-    
+        
+    include Enumerable 
+
     def initialize
       @processors = []
     end
+
+    def each(&block)
+      @processors.each(&block)
+    end
+
+    def <<(processor)
+      @processors << processor
+    end
     
-    # run all @processors on <em>msgs</em>
+    # Run all @processors on the given messages
     def process(messages)
       if @processors.empty?
         messages
@@ -26,7 +28,7 @@ module DiamondEngine
       end
     end
     
-    # find the processor with the name <em>name</em>
+    # Find the processor with the given name
     def find_by_name(name)
       @processors.find { |process| process.name == name }
     end

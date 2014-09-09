@@ -1,25 +1,21 @@
-#!/usr/bin/env ruby
-
-require 'helper'
+require "helper"
 
 class SequencerCallbacksTest < Test::Unit::TestCase
-
-  include DiamondEngine
-  include MIDIMessage
-  include TestHelper
   
   def test_rest_when
     output = $test_device[:output]
-    seq = MIDISequencer.new(175, :midi => output)
-    seq.rest_when { |state| state.pointer == 0 }
-    assert_equal(true, seq.rest?)
+    seq = DiamondEngine::MIDISequencer.new(175, :midi => output)
+    seq.rest_when Proc.new { |state| state.pointer == 0 }
+    assert_not_nil seq.events.rest_when
+    assert seq.state.rest?(&seq.events.rest_when)
   end
   
   def test_reset_when
     output = $test_device[:output]
-    seq = MIDISequencer.new(175, :midi => output)
-    seq.rest_when { |state| state.pointer == 0 }
-    assert_equal(true, seq.rest?)
+    seq = DiamondEngine::MIDISequencer.new(175, :midi => output)
+    seq.reset_when Proc.new { |state| state.pointer == 0 }
+    assert_not_nil seq.events.reset_when
+    assert seq.state.reset?(&seq.events.reset_when)
   end
   
   def test_on_start

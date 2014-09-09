@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 module DiamondEngine
 
   class SequencerState
@@ -21,6 +20,14 @@ module DiamondEngine
     
     def running?
       @running
+    end
+
+    def rest?(&block)
+      block_given? && yield(self)
+    end
+
+    def reset?(&block)
+      block_given? && yield(self)
     end
     
     def start

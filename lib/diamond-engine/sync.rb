@@ -1,57 +1,86 @@
-#!/usr/bin/env ruby
 module DiamondEngine
   
   class Sync
-    
-    attr_reader :queue, :children
-    
-    def initialize
-      @queue = {}
-      @children = []
+
+    class << self
+
+      include Enumerable
+
+      def sync
+        @sync ||= {}
+      end
+
+      def each(&block)
+        sync.values.each(&block)
+      end
+
+      def [](master)
+        sync[master]
+      end
+      
+      def []=(master, sync)
+        self.sync[master] = sync
+      end
+
     end
     
-    # sync another <em>syncable</em> to self
+    attr_reader :master, # the master sequencer that controls the tempo
+                :slave_queue, # a queue of sequencers to begin sync for on the next beat
+                :slaves # sequencers that are controlled by the master
+    
+    def initialize(master, options = {})
+      @master = master
+      @slave_queue = {}
+      @slaves = options[:slaves] || [options[:slave]].flatten
+    end
+    
+    # Sync the given syncable to self
     # pass :now => true to queue the sync to happen immediately
     # otherwise the sync will happen at the beginning of self's next sequence
     def add(syncable, options = {})
-      @queue[syncable] = options[:now] || false
+      @slave_queue[syncable] = options[:now] || false
       true               
     end
     
-    # is <em>syncable</em> synced to this instrument?
+    # Is the given syncable a slave?
+    def slave?(syncable)
+      @slaves.include?(syncable) || @slave_queue.include?(syncable)
+    end
+
+    # Is the given syncable master or slave?
     def include?(syncable)
-      @children.include?(syncable) || @queue.include?(syncable)
+      slave?(syncable) || @master == syncable
     end
     
-    # stop sending sync to <em>syncable</em>
+    # Stop sending sync to syncable
     def remove(syncable)
-      @children.delete(syncable)
-      @queue.delete(syncable)
-      syncable.unpause_clock
+      @slaves.delete(syncable)
+      @slave_queue.delete(syncable)
+      syncable.clock.unpause
       true
     end
     
     def stop
-      @children.each(&:stop)
+      @slaves.each(&:stop)
     end
     
     def start
-      @children.each(&:start)
+      @slaves.each(&:start)
     end
     
     def tick
-      @children.each { |c| c.send(:tick) }
+      @slaves.each { |c| c.send(:tick) }
     end
     
-    # you don't truly hear sync until children are moved from the queue to the children set 
-    def activate_queued(force_sync_now = false)
+    # You don't truly hear sync until slaves are moved from the queue to the slaves set 
+    def activate_queued(options = {})
       updated = []
-      @queue.each do |syncable, sync_now|
-        if sync_now || force_sync_now 
-          @children << syncable
-          syncable.start unless syncable.running?
-          syncable.pause_clock
-          @queue.delete(syncable)
+      @slave_queue.each do |syncable, sync_now|
+        if sync_now || options[:force_sync_now]
+          @slaves << syncable
+          syncable.start(:suppress_clock => true) unless syncable.running?
+          syncable.clock.pause
+          @slave_queue.delete(syncable)
           updated << syncable
         end
       end

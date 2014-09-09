@@ -5,7 +5,7 @@ module DiamondEngine
     attr_accessor :mute
     attr_reader :clock_destinations, :destinations
     
-    def initialize(devices = nil, options = {})
+    def initialize(devices = nil)
       @clock_destinations = []
       @destinations = []
       @mute = false
@@ -65,7 +65,8 @@ module DiamondEngine
     # Send MIDI messages to all destinations
     def emit(messages)
       unless muted?
-        data = as_data([messages].flatten)
+        messages = [messages].flatten
+        data = as_data(messages)
         @destinations.each { |destination| destination.puts(data) }
       end
     end

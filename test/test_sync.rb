@@ -1,29 +1,35 @@
-#!/usr/bin/env ruby
+require "helper"
 
-require 'helper'
-
-class SyncTest < Test::Unit::TestCase
-
-  include DiamondEngine
-  include MIDIMessage
-  include TestHelper
+class DiamondEngine::SyncTest < Test::Unit::TestCase
   
   def test_add
-    s1 = Sync.new
-    s2 = MIDISequencer.new(127)
-    assert_equal(false, s1.include?(s2))
-    s1.add(s2)
-    assert_equal(true, s1.include?(s2))
+    seq1 = DiamondEngine::MIDISequencer.new(110)
+    seq2 = DiamondEngine::MIDISequencer.new(120)
+    sync = DiamondEngine::Sync.new(seq1)
+
+    assert sync.include?(seq1)
+    refute sync.slave?(seq1)
+    refute sync.include?(seq2)
+
+    sync.add(seq2)
+
+    assert sync.include?(seq2)
+    assert sync.slave?(seq2)
   end
 
   def test_remove
-    s1 = Sync.new
-    s2 = MIDISequencer.new(127)
-    assert_equal(false, s1.include?(s2))
-    s1.add(s2)
-    assert_equal(true, s1.include?(s2))
-    s1.remove(s2)
-    assert_equal(false, s1.include?(s2))
+    seq1 = DiamondEngine::MIDISequencer.new(110)
+    seq2 = DiamondEngine::MIDISequencer.new(120)
+    sync = DiamondEngine::Sync.new(seq1, :slave => seq2)
+
+    assert sync.include?(seq1)
+    assert sync.include?(seq2)
+    refute sync.slave?(seq1)
+
+    sync.remove(seq2)
+
+    assert sync.include?(seq1)
+    refute sync.include?(seq2)
   end
   
   def test_activate_now

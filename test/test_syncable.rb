@@ -1,16 +1,10 @@
-#!/usr/bin/env ruby
+require "helper"
 
-require 'helper'
-
-class SyncableTest < Test::Unit::TestCase
-
-  include DiamondEngine
-  include MIDIMessage
-  include TestHelper
+class DiamondEngine::SyncableTest < Test::Unit::TestCase
   
   def test_sync
-    s1 = MIDISequencer.new(120)
-    s2 = MIDISequencer.new(127)
+    s1 = DiamondEngine::MIDISequencer.new(120)
+    s2 = DiamondEngine::MIDISequencer.new(127)
     assert_equal(false, s1.sync?(s2))
     s1.sync(s2)
     assert_equal(true, s1.sync?(s2))
