@@ -20,10 +20,12 @@ require "diamond-engine/sequencer_api"
 
 # classes
 require "diamond-engine/event/note"
+require "diamond-engine/clock"
 require "diamond-engine/events"
 require "diamond-engine/midi_emitter"
 require "diamond-engine/midi_listener"
 require "diamond-engine/midi_sequencer"
+require "diamond-engine/sequencer"
 require "diamond-engine/sequencer_state"
 require "diamond-engine/sync"
 

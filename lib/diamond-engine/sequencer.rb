@@ -2,6 +2,9 @@ module DiamondEngine
 
   class Sequencer
 
+    include SequencerAPI::Events
+    include SequencerAPI::State
+
     attr_accessor :sequence, :perform
     attr_reader :events, :state, :name
 

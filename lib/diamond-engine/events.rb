@@ -6,17 +6,17 @@ module DiamondEngine
                   :rest_when,  # when true, no messages will be outputted during that step
                   :start, 
                   :stop, 
-                  :tick
+                  :perform
     alias_method :on_start, :start=
     alias_method :on_stop, :stop=
-    alias_method :on_tick, :tick=
+    alias_method :on_perform, :perform=
     
     def initialize
       @rest_when = nil
       @reset_when = nil
       @start = nil
       @stop = nil
-      @tick = nil
+      @perform = nil
     end
         
     # Bind an event when the instrument plays a rest on every given beat

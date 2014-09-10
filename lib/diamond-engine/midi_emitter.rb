@@ -23,6 +23,16 @@ module DiamondEngine
     def muted?
       @mute
     end
+
+    def stop(sequence)
+      emit_pending_note_offs(sequence)
+    end
+    alias_method :mute, :stop
+
+    def emit_pending_note_offs(sequence)
+      messages = sequence.pending_note_offs
+      emit(messages) unless messages.empty?
+    end
     
     # Stop and send note-offs to all destinations for all notes and channels
     def quiet!
@@ -36,6 +46,7 @@ module DiamondEngine
       end
       true
     end
+    alias_method :cleanup, :quiet!
     
     # Add an output where MIDI data will be sent
     def add_destinations(destinations)
@@ -64,10 +75,12 @@ module DiamondEngine
     
     # Send MIDI messages to all destinations
     def emit(messages)
-      unless muted?
+      unless muted? || messages.nil?
         messages = [messages].flatten
-        data = as_data(messages)
-        @destinations.each { |destination| destination.puts(data) }
+        unless messages.empty?
+          data = as_data(messages)
+          @destinations.each { |destination| destination.puts(data) }
+        end
       end
     end
              

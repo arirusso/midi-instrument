@@ -68,10 +68,6 @@ module DiamondEngine
       @slaves.each(&:start)
     end
     
-    def tick
-      @slaves.each { |c| c.send(:tick) }
-    end
-    
     # You don't truly hear sync until slaves are moved from the queue to the slaves set 
     def activate_queued(options = {})
       updated = []
