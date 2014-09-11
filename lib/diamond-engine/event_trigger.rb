@@ -9,12 +9,12 @@ module DiamondEngine
     end
 
     # When true, the sequence will go back to step 0
-    def reset_when(&block)
+    def reset(&block)
       @reset_when = block  
     end
 
     # When true, no messages will be outputted during that step
-    def rest_when(&block)
+    def rest(&block)
       @rest_when = block
     end
 
@@ -22,7 +22,7 @@ module DiamondEngine
       !@reset_when.nil? && @reset_when.call(data, state)
     end
 
-    def stop_when(&block)
+    def stop(&block)
       @stop_when = block
     end
 

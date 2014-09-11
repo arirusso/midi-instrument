@@ -2,11 +2,11 @@ module DiamondEngine
 
   class Sequencer
 
-    attr_reader :event, :event_trigger, :state
+    attr_reader :event, :trigger, :state
 
     def initialize(options = {}, &block)
       @event = Event.new(&block)
-      @event_trigger = EventTrigger.new
+      @trigger = EventTrigger.new
       @state = SequencerState.new
     end
 
@@ -48,11 +48,11 @@ module DiamondEngine
     def perform(sequence)
       data = sequence.at(@state.pointer)
       unless data.nil?
-        if @event_trigger.stop?(data, @state)
+        if @trigger.stop?(data, @state)
           stop
           false
         else
-          if @event_trigger.reset?(data, @state)
+          if @trigger.reset?(data, @state)
             @state.reset 
           end
           @event.perform(data)
