@@ -1,32 +1,16 @@
 module DiamondEngine
 
-  class Events
-
-    attr_accessor :perform,
-                  :start, 
-                  :step
+  class EventTrigger
           
-    def initialize(&block)
-      @rest_when = nil
-      @reset_when = nil
-      @start = nil
+    def initialize
+      @rest = nil
+      @reset = nil
       @stop = nil
-      @stop_when = nil
-      @tick = nil
-      @perform = block
     end
 
     # When true, the sequence will go back to step 0
     def reset_when(&block)
       @reset_when = block  
-    end
-
-    def stop(&block)
-      @stop = block
-    end
-
-    def do_stop(state)
-      @stop.call(state) unless @stop.nil?
     end
 
     # When true, no messages will be outputted during that step
@@ -44,10 +28,6 @@ module DiamondEngine
 
     def stop?(data, state)
       !@stop_when.nil? && @stop_when.call(data, state)
-    end
-
-    def perform(data)
-      @perform.call(data) unless @perform.nil?
     end
         
     # Bind an event when the instrument plays a rest on every given beat
@@ -77,3 +57,4 @@ module DiamondEngine
   end
   
 end
+

@@ -7,13 +7,13 @@ sequence = [1,2,3,4]
 sequencer = DiamondEngine::Sequencer.new { |data| p data }
 
 clock = DiamondEngine::Clock.new(120) do
-  sequencer.step(sequence) && sequencer.perform(sequence)
+  sequencer.perform(sequence) && sequencer.step(sequence)
 end
 
-sequencer.events.stop_when do |data|
+sequencer.event_trigger.stop_when do |data|
   data == 4
 end
-sequencer.events.stop do
+sequencer.event.stop do
   clock.stop
 end
 

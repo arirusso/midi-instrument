@@ -2,10 +2,11 @@ module DiamondEngine
 
   class Sequencer
 
-    attr_reader :events, :state
+    attr_reader :event, :event_trigger, :state
 
-    def initialize(options = {}, &block)   
-      @events = Events.new(&block)
+    def initialize(options = {}, &block)
+      @event = Event.new(&block)
+      @event_trigger = EventTrigger.new
       @state = SequencerState.new
     end
 
@@ -24,7 +25,7 @@ module DiamondEngine
         quiet!        
         exit
       }
-      @events.start.call(@state) unless @events.start.nil?
+      @event.start.call(@state) unless @events.start.nil?
       @state.start
       yield if block_given?
       true
@@ -33,24 +34,30 @@ module DiamondEngine
     # stops the clock and sends any remaining MIDI note-off messages that are in the queue
     def stop(options = {}, &block)
       @state.stop
-      @events.do_stop(@state)
+      @event.do_stop(@state)
       yield if block_given?
       true            
     end
 
     def step(sequence)
       @state.step(sequence.length)
-      @events.step.call(data, @state) unless @events.step.nil?
+      @event.step.call(data, @state) unless @event.step.nil?
       true
     end
 
     def perform(sequence)
       data = sequence.at(@state.pointer)
       unless data.nil?
-        stop if @events.stop?(data, @state)
-        @state.reset if @events.reset?(data, @state)
-        @events.perform(data)
-        true
+        if @event_trigger.stop?(data, @state)
+          stop
+          false
+        else
+          if @event_trigger.reset?(data, @state)
+            @state.reset 
+          end
+          @event.perform(data)
+          true
+        end
       end
     end
 
