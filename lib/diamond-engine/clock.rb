@@ -19,6 +19,7 @@ module DiamondEngine
       clock_options = {}
       clock_options[:background] = true unless !!options[:focus] || !!options[:foreground]
       @clock.start(clock_options) unless !!options[:suppress_clock]
+      Thread.abort_on_exception = true
     end
 
     # Is this clock master of the given syncable?

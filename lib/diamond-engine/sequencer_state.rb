@@ -10,24 +10,21 @@ module DiamondEngine
     end
     
     def step(length)
-      @pointer = (@pointer >= (length - 1)) ? 0 : @pointer + 1
+      if @pointer < length - 1
+        @pointer += 1
+      else
+        reset_pointer
+      end
+      true
     end
     
-    # return to the beginning of the sequence
+    # Return to the beginning of the sequence
     def reset_pointer
       @pointer = 0
     end
     
     def running?
       @running
-    end
-
-    def rest?(&block)
-      block_given? && yield(self)
-    end
-
-    def reset?(&block)
-      block_given? && yield(self)
     end
     
     def start
