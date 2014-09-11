@@ -11,12 +11,12 @@ module DiamondEngine
     alias_method :on_stop, :stop=
     alias_method :on_perform, :perform=
     
-    def initialize
+    def initialize(&block)
       @rest_when = nil
       @reset_when = nil
       @start = nil
       @stop = nil
-      @perform = nil
+      @perform = block
     end
         
     # Bind an event when the instrument plays a rest on every given beat

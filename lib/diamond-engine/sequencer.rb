@@ -2,18 +2,13 @@ module DiamondEngine
 
   class Sequencer
 
-    include SequencerAPI::Events
-    include SequencerAPI::State
-
-    attr_accessor :sequence, :perform
+    attr_accessor :sequence
     attr_reader :events, :state, :name
 
     def initialize(options = {}, &block)   
-      @events = Events.new
+      @events = Events.new(&block)
       @state = SequencerState.new
       @name = options[:name]
-      @sequence = options[:sequence]
-      @perform = block
     end
 
     # toggle start/stop
@@ -46,18 +41,18 @@ module DiamondEngine
       true            
     end
 
-    def step
-      @state.step(@sequence.length)
+    def step(sequence)
+      @state.step(sequence.length)
       true
     end
 
     private
 
-    def perform
-      @sequence.at(@state.pointer) do |data|
+    def perform(sequence)
+      sequence.at(@state.pointer) do |data|
         @events.tick.call(data, @state) unless @events.tick.nil?
         @state.reset if @state.reset?(&@components[:events].reset_when)
-        @perform.call(data) unless @perform.nil?
+        @events.perform.call(data) unless @events.perform.nil?
         true
       end
     end

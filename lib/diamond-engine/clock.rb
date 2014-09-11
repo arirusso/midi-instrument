@@ -6,9 +6,9 @@ module DiamondEngine
 
     def_delegators :@clock, :pause, :unpause
 
-    def initialize(tempo_or_input, outputs, options = {}, &block)
+    def initialize(tempo_or_input, options = {}, &block)
       @pointer = options[:pointer]
-      initialize_clock(tempo_or_input, options.fetch(:resolution, 128), :outputs => outputs, &block)
+      initialize_clock(tempo_or_input, options.fetch(:resolution, 128), :outputs => options[:outputs], &block)
     end
 
     def stop

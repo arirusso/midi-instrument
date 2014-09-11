@@ -22,9 +22,12 @@ module DiamondEngine
       @components = {}
       output_devices = [options[:midi_outputs]].flatten
 
-      @clock = Clock.new(tempo_or_input, output_devices, options)
+      clock_options = options.dup
+      clock_options[:outputs] = output_devices if !!options[:midi_clock_output]
+
       @emitter = MIDIEmitter.new(output_devices)
       @sequencer = Sequencer.new(options)
+      @clock = Clock.new(tempo_or_input, clock_options, &block)
     end
 
     # toggle start/stop
