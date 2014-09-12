@@ -1,4 +1,4 @@
-module DiamondEngine
+module MIDISequencer 
   
   class MIDIListener
     

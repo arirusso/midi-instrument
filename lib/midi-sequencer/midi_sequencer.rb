@@ -1,4 +1,4 @@
-module DiamondEngine
+module MIDISequencer
 
   class MIDISequencer
 
@@ -13,6 +13,10 @@ module DiamondEngine
       @emitter = MIDIEmitter.new(options[:midi_outputs])
     end
 
+  end
+
+  def self.new(options = {}, &block)
+    ::MIDISequencer::MIDISequencer.new(options, &block)
   end
 
 end

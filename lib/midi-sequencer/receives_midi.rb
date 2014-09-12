@@ -1,5 +1,5 @@
-module DiamondEngine
-  
+module MIDISequencer
+
   module ReceivesMIDI
     
     def receive_midi(name, match = {}, &block)

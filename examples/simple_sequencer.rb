@@ -5,12 +5,12 @@ $:.unshift File.join( File.dirname( __FILE__ ), '../lib')
 # ten times
 #
 
-require "diamond-engine"
+require "midi-sequencer"
 
 sequence = [1,2,3,4]
-sequencer = DiamondEngine::Sequencer.new
+sequencer = MIDISequencer::Sequencer.new
 
-clock = DiamondEngine::Clock.new(120)
+clock = MIDISequencer::Clock.new(120)
 clock.event.tick do
   sequencer.perform(sequence) && sequencer.step(sequence)
 end
