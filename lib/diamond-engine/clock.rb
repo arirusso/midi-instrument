@@ -8,6 +8,9 @@ module DiamondEngine
     attr_reader :event
     def_delegators :@clock, :pause, :unpause
 
+    # @param [Fixnum, UniMIDI::Input] tempo_or_input
+    # @param [Hash] options
+    # @option options [Array<UniMIDI::Output>, UniMIDI::Output] :midi_outputs MIDI output device(s)       
     def initialize(tempo_or_input, options = {})
       @event = Event.new
       initialize_clock(tempo_or_input, options.fetch(:resolution, 128), :outputs => options[:outputs])
