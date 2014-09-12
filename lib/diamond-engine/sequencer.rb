@@ -39,10 +39,6 @@ module DiamondEngine
       true            
     end
 
-    def sync?
-      @trigger.sync?(@state)
-    end
-
     def step(sequence)
       @state.step(sequence.length)
       @event.do_step(@state)
@@ -52,14 +48,14 @@ module DiamondEngine
     def perform(sequence)
       data = sequence.at(@state.pointer)
       unless data.nil?
-        if @trigger.stop?(data, @state)
+        if @trigger.stop?(@state, data)
           stop
           false
         else
-          if @trigger.reset?(data, @state)
+          if @trigger.reset?(@state, data)
             @state.reset 
           end
-          @event.do_perform(data, @state)
+          @event.do_perform(@state, data)
           true
         end
       end
