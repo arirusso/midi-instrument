@@ -5,13 +5,13 @@ module DiamondEngine
     attr_accessor :mute
     attr_reader :clock_destinations, :destinations
     
-    def initialize(devices = nil)
+    def initialize(devices)
       @clock_destinations = []
       @destinations = []
       @mute = false
       @processors = []
       
-      add_destinations(devices) unless devices.nil?   
+      add_destinations([devices].flatten)   
     end
 
     # Toggle mute on this emitter

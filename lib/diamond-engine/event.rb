@@ -37,8 +37,8 @@ module DiamondEngine
       @perform = block
     end
 
-    def do_perform(data, state)
-      !@perform.nil? && @perform.call(data, state)
+    def do_perform(state, data)
+      !@perform.nil? && @perform.call(state, data)
     end
                     
   end
