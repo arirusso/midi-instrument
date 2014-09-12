@@ -2,10 +2,11 @@ module DiamondEngine
 
   class SequencerState
     
-    attr_accessor :pointer
+    attr_accessor :pointer, :repeat
 
     def initialize
       @pointer = 0
+      @repeat = 0
       @running = false
     end
     
@@ -21,6 +22,7 @@ module DiamondEngine
     # Return to the beginning of the sequence
     def reset_pointer
       @pointer = 0
+      @repeat += 1
     end
     
     def running?
