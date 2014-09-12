@@ -12,11 +12,11 @@ Used by [Diamond](http://github.com/arirusso/diamond)
   
 `gem "midi-sequencer"` 
 
-== Documentation
+## Documentation
 
-* {rdoc}[http://rubydoc.info/github/arirusso/midi-sequencer] 
+* [rdoc](http://rubydoc.info/github/arirusso/midi-sequencer) 
 
-== License
+## License
 
 Licensed under Apache 2.0, See the file LICENSE
 
