@@ -8,9 +8,9 @@ $:.unshift File.join( File.dirname( __FILE__ ), '../lib')
 require "midi-sequencer"
 
 sequence = [1,2,3,4]
-sequencer = MIDISequencer::Sequencer.new
+sequencer = Sequencer.new
 
-clock = MIDISequencer::Clock.new(120)
+clock = Sequencer::Clock.new(120)
 clock.event.tick do
   sequencer.perform(sequence) && sequencer.step(sequence)
 end
