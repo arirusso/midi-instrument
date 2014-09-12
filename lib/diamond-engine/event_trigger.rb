@@ -6,7 +6,6 @@ module DiamondEngine
       @rest = nil
       @reset = nil
       @stop = nil
-      @sync = nil
     end
 
     # When true, the sequence will go back to step 0
@@ -19,24 +18,16 @@ module DiamondEngine
       @rest = block
     end
 
-    def reset?(data, state)
-      !@reset.nil? && @reset.call(data, state)
+    def reset?(state, data)
+      !@reset.nil? && @reset.call(state, data)
     end
 
     def stop(&block)
       @stop = block
     end
 
-    def stop?(data, state)
-      !@stop.nil? && @stop.call(data, state)
-    end
-
-    def sync(&block)
-      @sync = block
-    end
-
-    def sync?(state)
-      !@sync.nil? && @sync.call(state)
+    def stop?(state, data)
+      !@stop.nil? && @stop.call(state, data)
     end
         
     # Bind an event when the instrument plays a rest on every given beat
