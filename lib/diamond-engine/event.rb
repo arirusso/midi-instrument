@@ -1,16 +1,28 @@
 module DiamondEngine
 
   class Event
-
-    attr_accessor :perform,
-                  :start, 
-                  :step
           
-    def initialize(&block)
+    def initialize
       @start = nil
       @stop = nil
-      @tick = nil
-      @perform = block
+      @step = nil
+      @perform = nil
+    end
+
+    def start(&block)
+      @start = block
+    end
+
+    def do_start(state)
+      !@start.nil? && @start.call(state)
+    end
+
+    def step(&block)
+      @step = block
+    end
+
+    def do_step(state)
+      !@step.nil? && @step.call(state)
     end
 
     def stop(&block)
@@ -18,11 +30,15 @@ module DiamondEngine
     end
 
     def do_stop(state)
-      @stop.call(state) unless @stop.nil?
+      !@stop.nil? && @stop.call(state)
     end
 
-    def perform(data)
-      @perform.call(data) unless @perform.nil?
+    def perform(&block)
+      @perform = block
+    end
+
+    def do_perform(data, state)
+      !@perform.nil? && @perform.call(data, state)
     end
                     
   end

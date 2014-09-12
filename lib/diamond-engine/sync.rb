@@ -6,6 +6,10 @@ module DiamondEngine
 
       include Enumerable
 
+      def activate_queued(syncable, options = {})
+        !Sync[syncable].nil? && Sync[syncable].activate_queued(options)
+      end
+
       def sync
         @sync ||= {}
       end
@@ -72,7 +76,7 @@ module DiamondEngine
     def activate_queued(options = {})
       updated = []
       @slave_queue.each do |syncable, sync_now|
-        if sync_now || options[:force_sync_now]
+        if sync_now || options[:immediate]
           @slaves << syncable
           syncable.start(:suppress_clock => true) unless syncable.running?
           syncable.clock.pause
