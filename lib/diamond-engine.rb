@@ -17,6 +17,7 @@ require "unimidi"
 # modules
 require "diamond-engine/receives_midi"
 require "diamond-engine/sequencer_api"
+require "diamond-engine/syncable"
 
 # classes
 require "diamond-engine/clock"
