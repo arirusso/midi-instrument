@@ -8,10 +8,10 @@
 
 # libs
 require "forwardable"
+require "midi-eye"
 require "midi-message"
 require "scale"
 require "sequencer"
-require "topaz"
 require "unimidi"
 
 # classes

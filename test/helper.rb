@@ -4,7 +4,7 @@ $LOAD_PATH.unshift dir + "/../lib"
 require "test/unit"
 require "mocha/test_unit"
 require "shoulda-context"
-require "diamond-engine"
+require "midi-sequencer"
 
 module TestHelper
   
@@ -14,25 +14,5 @@ module TestHelper
       $test_device[type] = klass.gets
     end
   end
-    
-  class StubOutput
-    
-    attr_reader :cache
-    
-    def initialize
-      @cache = []
-    end
-    
-    def type
-      :output
-    end
-    
-    def puts(a)
-      @cache += a
-    end
-    
-  end
-     
+         
 end
-
-TestHelper.select_devices
