@@ -5,7 +5,7 @@ module MIDISequencer
     extend Forwardable
 
     attr_reader :core
-    def_delegators :@core, :event, :exec, :trigger
+    def_delegators :@core, :event, :exec, :state, :trigger
 
     def initialize(&block)   
       @core = Sequencer.new
