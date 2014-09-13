@@ -5,16 +5,18 @@ $:.unshift File.join( File.dirname( __FILE__ ), '../lib')
 
 require "midi-sequencer"
 
-output = UniMIDI::Output.gets
+input = UniMIDI::Input.gets
 
-sequence = %w{A1 A2 A3 A4}.map { |n| MIDIMessage::NoteOn[n].new(0, 100) }
+sequence = [1,2,3,4]
 sequencer = MIDISequencer.new
+
+listener = MIDISequencer::Listener.new(sequencer, input)
+listener.receive(:class => MIDIMessage::NoteOn) { |m| p m }
 
 clock = Sequencer::Clock.new(120)
 clock.event.tick { sequencer.exec(sequence) }
 
-sequencer.trigger.stop { |state| state.repeat == 10 }
-sequencer.event.perform { |state, data| sequencer.emit(output, data) }
 sequencer.event.stop { clock.stop }
 
 clock.start(:focus => true)
+

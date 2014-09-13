@@ -3,51 +3,28 @@ module MIDISequencer
   class Listener
     
     extend Forwardable
-    
-    attr_reader :sources
-    
-    def_delegators :@listener, :stop
+        
+    def_delegators :@listener, :add_input, :remove_input, :stop
     def_delegator :@listener, :remove_listener, :delete_event
     
     def initialize(instrument, sources, options = {})
       @instrument = instrument
-      @sources = [sources].flatten
-      @listener = MIDIEye::Listener.new(sources)
+      @listener = MIDIEye::Listener.new([sources].flatten)
       load_midi_map(options[:map]) unless options[:map].nil?
-      start
     end
     
-    def receive(name, match = {}, &block)
-      match[:listener_name] = name    
-      @listener.listen_for(match) { |event| yield(instrument, event) }
+    def receive(match = {}, &block)
+      @listener.listen_for(match, &block)
       @listener.start(:background => true)
       true
     end
-    
-    def add(source)
-      sources = [source].flatten.select { |source| !@sources.include?(source) }
-      @listener.add_input(sources)
-      @sources += sources
-      @sources
-    end
-    
-    def remove(source)
-      sources = [source].flatten
-      @sources.delete_if { |source| sources.include?(source) }
-      @listener.remove_input(sources)
-      @sources
-    end
-    
-    protected
-    
-    def start
-      @listener.start(:background => true)
-    end
+            
+    private
     
     def load_midi_map(map)
       map.each do |item|
         name = "#{item[:property]}_#{map.index(item)}"
-        receive(name, item[:match]) do |instrument, event|
+        receive(item[:match]) do |event|
           handle_event(event, item)
         end
       end
@@ -56,6 +33,7 @@ module MIDISequencer
     private
 
     def handle_event(event, item)
+      p "hi"
       Thread.abort_on_exception = true
       message = event[:message]
       raw_value = message.send(item[:using])
@@ -64,6 +42,7 @@ module MIDISequencer
       else
         scale_value(raw_value, item)
       end
+      p item
       @instrument.send(item[:property], value)
     end
 
