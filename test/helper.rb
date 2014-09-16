@@ -4,7 +4,7 @@ $LOAD_PATH.unshift dir + "/../lib"
 require "test/unit"
 require "mocha/test_unit"
 require "shoulda-context"
-require "midi-sequencer"
+require "midi-instrument"
 
 module TestHelper
   
