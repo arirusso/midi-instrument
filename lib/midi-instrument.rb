@@ -15,9 +15,10 @@ require "scale"
 require "unimidi"
 
 # modules
-require "midi-instrument/message"
-require "midi-instrument/listen"
+require "midi-instrument/device"
 require "midi-instrument/emit"
+require "midi-instrument/listen"
+require "midi-instrument/message"
 
 # classes
 require "midi-instrument/listener"
