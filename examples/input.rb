@@ -1,26 +1,24 @@
 #!/usr/bin/env ruby
 $:.unshift File.join( File.dirname( __FILE__ ), '../lib')
 
-# 
+# An instrument that receives note on messages and prints them to the console
 
-require "midi-sequencer"
+require "midi-instrument"
+
+class Instrument
+
+  include MIDIInstrument::Listen
+
+  def initialize(midi_inputs)
+    listen_for_midi(midi_inputs)
+  end
+
+end
 
 input = UniMIDI::Input.gets
 
-sequence = [1,2,3,4]
-sequencer = MIDISequencer.new
+inst = Instrument.new(input)
 
-listener = MIDISequencer::Listener.new(sequencer, input)
+inst.receive_midi(:class => MIDIMessage::NoteOn) { |event| p event[:message].name }
 
-listener.receive(:class => MIDIMessage::NoteOn) do |event| 
-  sequence[sequencer.state.pointer] = event[:message].note
-end
-
-clock = Sequencer::Clock.new(120)
-clock.event.tick { sequencer.exec(sequence) }
-
-sequencer.event.perform { |state, data| p sequence }
-sequencer.event.stop { clock.stop }
-
-clock.start(:focus => true)
-
+inst.midi_listener.join
