@@ -33,7 +33,6 @@ module MIDISequencer
     private
 
     def handle_event(event, item)
-      p "hi"
       Thread.abort_on_exception = true
       message = event[:message]
       raw_value = message.send(item[:using])
@@ -42,7 +41,6 @@ module MIDISequencer
       else
         scale_value(raw_value, item)
       end
-      p item
       @instrument.send(item[:property], value)
     end
 
@@ -55,3 +53,4 @@ module MIDISequencer
   end
   
 end
+

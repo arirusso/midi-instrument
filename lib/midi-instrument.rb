@@ -1,6 +1,6 @@
 #
-# MIDI Sequencer
-# Core MIDI sequencer functionality
+# MIDI Instrument
+# MIDI Instrument modules
 #
 # (c)2011-2014 Ari Russo
 # Licensed under Apache 2.0
@@ -15,11 +15,12 @@ require "sequencer"
 require "unimidi"
 
 # classes
-require "midi-sequencer/core"
-require "midi-sequencer/listener"
-require "midi-sequencer/note_event"
+require "midi-instrument/emit"
+require "midi-instrument/listen"
+require "midi-instrument/listener"
+require "midi-instrument/note_event"
 
-module MIDISequencer
+module MIDIInstrument
   
   VERSION = "0.3.5"
   
