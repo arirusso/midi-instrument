@@ -7,6 +7,15 @@ module MIDIInstrument
     DefaultChannel = 0
     DefaultVelocity = 100
 
+    def to_messages(*args)
+      data = [args.dup].flatten
+      if data.all? { |item| item.kind_of?(String) }
+        Message.to_note_on(*data) # string note names
+      elsif data.all? { |item| item.class.name.match(/\AMIDIMessage::[a-zA-Z]+\z/) }
+        data # messages
+      end
+    end
+
     def to_bytes(*args)
       data = [args.dup].flatten
       messages = if data.all? { |item| item.kind_of?(String) }
