@@ -15,9 +15,10 @@ module MIDIInstrument
 
     # Add MIDI messages manually to the MIDI input buffer. 
     # @param [Array<MIDIMessage>, MIDIMessage, *MIDIMessage] args
+    # @return [Array<MIDIMessage>]
     def add(*args)
       data = [args.dup].flatten
-      messages = Message.to_message(*data)
+      messages = Message.to_messages(*data)
       messages.each do |message|
         report = { :message => message, :timestamp => Time.now.to_i }
         @listener.event.enqueue_all(report)
