@@ -9,5 +9,4 @@ end
 gem "analog"
 gem "midi-eye"
 gem "midi-message"
-gem "basic-sequencer"
 gem "unimidi"

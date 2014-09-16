@@ -11,7 +11,6 @@ require "forwardable"
 require "midi-eye"
 require "midi-message"
 require "scale"
-require "sequencer"
 require "unimidi"
 
 # classes
