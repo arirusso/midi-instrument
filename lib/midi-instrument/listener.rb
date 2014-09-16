@@ -12,10 +12,19 @@ module MIDIInstrument
       @listener = MIDIEye::Listener.new([sources].flatten)
       load_midi_map(options[:map]) unless options[:map].nil?
     end
+
+    def join
+      start if !@listener.running?
+      @listener.join
+    end
+
+    def start
+      @listener.start(:background => true)
+    end
     
     def receive(match = {}, &block)
       @listener.listen_for(match, &block)
-      @listener.start(:background => true)
+      start if !@listener.running?
       true
     end
             
