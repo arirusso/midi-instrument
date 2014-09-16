@@ -7,18 +7,20 @@ require "midi-instrument"
 
 class Instrument
 
-  include MIDIInstrument::Listen
+  attr_reader :midi
 
-  def initialize(midi_inputs)
-    listen_for_midi(midi_inputs)
+  def initialize
+    @midi = MIDIInstrument::Node.new
   end
 
 end
 
 input = UniMIDI::Input.gets
 
-inst = Instrument.new(input)
+inst = Instrument.new
 
-inst.receive_midi(:class => MIDIMessage::NoteOn) { |event| p event[:message].name }
+inst.midi.inputs << input
 
-inst.midi_listener.join
+inst.midi.receive(:class => MIDIMessage::NoteOn) { |event| p event[:message].name }
+
+inst.midi.listener.join
