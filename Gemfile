@@ -6,7 +6,6 @@ group :test do
   gem "shoulda-context"
 end
 
-gem "analog"
 gem "midi-eye"
 gem "midi-fx"
 gem "midi-message"

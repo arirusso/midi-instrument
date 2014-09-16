@@ -11,7 +11,6 @@ require "forwardable"
 require "midi-eye"
 require "midi-fx"
 require "midi-message"
-require "scale"
 require "unimidi"
 
 # modules
