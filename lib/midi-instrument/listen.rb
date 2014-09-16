@@ -36,6 +36,15 @@ module MIDIInstrument
       true
     end
 
+    # Replace the inputs with the given inputs
+    # @param [Array<UniMIDI::Inputs>] inputs
+    # @return [InputContainer]
+    def inputs=(inputs)
+      @inputs.clear
+      @inputs += inputs
+      @inputs
+    end
+
     private
 
     # @param [Hash] options
@@ -86,6 +95,13 @@ module MIDIInstrument
         result = super
         @listener.remove_input(input)
         result
+      end
+
+      # Clear all inputs
+      # @return [InputContainer]
+      def clear
+        @listener.inputs.each { |input| delete(input) }
+        super
       end
 
       # Delete multiple inputs
