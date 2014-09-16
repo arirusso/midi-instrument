@@ -1,20 +1,20 @@
-#MIDI Sequencer
+#MIDI Instrument
 
-Core MIDI sequencer functionality
+MIDI Instrument modules
 
 Used by [Diamond](http://github.com/arirusso/diamond)
 
 ## Installation
 
-`gem install midi-sequencer`
+`gem install midi-instrument`
   
   or with Bundler, add this to your Gemfile
   
-`gem "midi-sequencer"` 
+`gem "midi-instrument"` 
 
 ## Documentation
 
-* [rdoc](http://rubydoc.info/github/arirusso/midi-sequencer) 
+* [rdoc](http://rubydoc.info/github/arirusso/midi-instrument) 
 
 ## License
 
