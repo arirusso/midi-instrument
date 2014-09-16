@@ -21,6 +21,8 @@ inst = Instrument.new
 
 inst.midi.inputs << input
 
-inst.midi.receive(:class => MIDIMessage::NoteOn) { |event| p event[:message].name }
+inst.midi.receive(:class => MIDIMessage::NoteOn) { |event| puts event[:message].name }
 
-inst.midi.listener.join
+inst.midi.listener << "A1" # Add messages manually
+
+inst.midi.listener.join # Wait for input from the MIDI device

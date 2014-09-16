@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 $:.unshift File.join( File.dirname( __FILE__ ), '../lib')
 
-# This example loops through sending a batch of MIDI messages ten times to the user selected output 
+# Sends MIDI notes to an output 
 
 require "midi-instrument"
 
@@ -21,4 +21,7 @@ instrument = Instrument.new
 
 instrument.midi.outputs << output
 
-instrument.midi.puts("A4")
+%w{A3 C4 E4 A4 C5 E5 A6}.each do |note|
+  instrument.midi.puts(note)
+  sleep(0.2)
+end
