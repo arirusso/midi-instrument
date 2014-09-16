@@ -21,7 +21,19 @@ inst = Instrument.new
 
 inst.midi.inputs << input
 
-inst.midi.receive(:class => MIDIMessage::NoteOn) { |event| puts event[:message].name }
+notes = Hash.new {|h,k| h[k] = [] }
+last = nil
+
+inst.midi.receive(:class => MIDIMessage::NoteOn) do |event| 
+  notes[event[:timestamp]] << event[:message].name
+  if last != event[:timestamp]
+    unless last.nil?
+      log = notes[last].count > 1 ? "chord: #{notes[last].join(', ')}" : "notes: #{notes[last][0]}"
+      p log
+    end
+    last = event[:timestamp]
+  end
+end
 
 inst.midi.listener << "A1" # Add messages manually
 
