@@ -10,10 +10,11 @@ module MIDIInstrument
 
     # Add a MIDI input callback
     # @param [Hash] match Matching spec
+    # @param [Proc] callback
     # @return [Boolean]
-    def receive(match = {}, &block)
+    def receive(match = {}, &callback)
       listener.receive(match) do |event|
-        event = filter_input(event)
+        event = filter_event(event)
         yield(event)
       end
       self
@@ -41,16 +42,15 @@ module MIDIInstrument
     # @option options [Array<UniMIDI::Input>, UniMIDI::Input] :sources
     # @option options [Hash] :input_map
     def initialize_listen(options = {})
-      @listener = Listener.new(self, options[:sources], :map => options[:input_map])
+      @listener = Listener.new(options[:sources])
       @inputs = InputContainer.new(@listener)
     end
 
-    def filter_input(event)
-      if @input_filter.nil?
-        event
-      else
-        event[:messages] = event[:messages].map { |message| @input_filter.process(message) }
+    def filter_event(event)
+      if !@input_filter.nil?
+        event[:message] = @input_filter.process(event[:message])
       end
+      event
     end
 
     # Container class that handles updating the listener when changes are made

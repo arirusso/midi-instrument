@@ -7,10 +7,8 @@ module MIDIInstrument
     def_delegators :@listener, :add_input, :remove_input, :stop
     def_delegator :@listener, :remove_listener, :delete_event
     
-    def initialize(instrument, sources, options = {})
-      @instrument = instrument
+    def initialize(sources)
       @listener = MIDIEye::Listener.new([sources].flatten)
-      load_midi_map(options[:map]) unless options[:map].nil?
     end
 
     # Add MIDI messages manually to the MIDI input buffer. 
@@ -20,7 +18,10 @@ module MIDIInstrument
       data = [args.dup].flatten
       messages = Message.to_messages(*data)
       messages.each do |message|
-        report = { :message => message, :timestamp => Time.now.to_i }
+        report = { 
+          :message => message, 
+          :timestamp => Time.now.to_f 
+        }
         @listener.event.enqueue_all(report)
       end
       messages
@@ -36,21 +37,10 @@ module MIDIInstrument
       @listener.start(:background => true)
     end
     
-    def receive(match = {}, &block)
-      @listener.listen_for(match, &block)
+    def receive(match = {}, &callback)
+      @listener.listen_for(match, &callback)
       start if !@listener.running?
       true
-    end
-            
-    private
-    
-    def load_midi_map(map)
-      map.each do |item|
-        receive(item[:match]) do |event|
-          message = event[:message]
-          item[:proc].call(message)
-        end
-      end
     end
               
   end
