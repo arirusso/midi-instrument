@@ -13,10 +13,14 @@ require "midi-message"
 require "scale"
 require "unimidi"
 
-# classes
-require "midi-instrument/emit"
+# modules
+require "midi-instrument/message"
 require "midi-instrument/listen"
+require "midi-instrument/emit"
+
+# classes
 require "midi-instrument/listener"
+require "midi-instrument/node"
 require "midi-instrument/note_event"
 
 module MIDIInstrument
