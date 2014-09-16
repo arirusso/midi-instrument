@@ -1,5 +1,5 @@
-module MIDISequencer 
-  
+module MIDIInstrument
+
   class Listener
     
     extend Forwardable

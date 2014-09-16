@@ -1,4 +1,4 @@
-module MIDISequencer 
+module MIDIInstrument
   
   module Listen
 
