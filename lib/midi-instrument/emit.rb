@@ -1,6 +1,6 @@
 module MIDIInstrument
 
-  # Enable a node for MIDI output
+  # Send MIDI messages
   module Emit
 
     def self.included(base)

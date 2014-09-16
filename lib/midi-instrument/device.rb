@@ -5,6 +5,7 @@ module MIDIInstrument
 
     extend self
 
+    # Partition UniMIDI devices into a hash of inputs and outputs
     # @param [Array<UniMIDI::Input, UniMIDI::Output>, UniMIDI::Input, UniMIDI::Output] devices Input or output device(s).
     # @return [Hash] Partitioned arrays of inputs and outputs.
     def partition(devices)
