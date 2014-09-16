@@ -13,6 +13,19 @@ module MIDIInstrument
       load_midi_map(options[:map]) unless options[:map].nil?
     end
 
+    # Add MIDI messages manually to the MIDI input buffer. 
+    # @param [Array<MIDIMessage>, MIDIMessage, *MIDIMessage] args
+    def add(*args)
+      data = [args.dup].flatten
+      messages = Message.to_message(*data)
+      messages.each do |message|
+        report = { :message => message, :timestamp => Time.now.to_i }
+        @listener.event.enqueue_all(report)
+      end
+      messages
+    end
+    alias_method :<<, :add
+
     def join
       start if !@listener.running?
       @listener.join
@@ -32,31 +45,11 @@ module MIDIInstrument
     
     def load_midi_map(map)
       map.each do |item|
-        name = "#{item[:property]}_#{map.index(item)}"
         receive(item[:match]) do |event|
-          handle_event(event, item)
+          message = event[:message]
+          item[:proc].call(message)
         end
       end
-    end
-
-    private
-
-    def handle_event(event, item)
-      Thread.abort_on_exception = true
-      message = event[:message]
-      raw_value = message.send(item[:using])
-      value = if item[:new_range].nil?
-        raw_value 
-      else
-        scale_value(raw_value, item)
-      end
-      @instrument.send(item[:property], value)
-    end
-
-    def scale_event_value(raw_value, map)
-      scaled = Scale.transform(raw_value).from(map[:original_range]).to(map[:new_range])
-      scaled = scaled.to_i if map[:type] != "float"
-      scaled
     end
               
   end
