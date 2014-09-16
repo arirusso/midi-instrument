@@ -49,7 +49,7 @@ module MIDIInstrument
       end
     end
 
-    def initialize_emit
+    def initialize_emit(options = {})
       @outputs = []
     end
 

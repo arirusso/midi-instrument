@@ -5,9 +5,9 @@ module MIDIInstrument
     include Emit
     include Listen
 
-    def initialize
-      initialize_emit
-      initialize_listen
+    def initialize(options = {})
+      initialize_emit(options)
+      initialize_listen(options)
     end
 
   end
