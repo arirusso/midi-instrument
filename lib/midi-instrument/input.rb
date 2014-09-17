@@ -32,6 +32,9 @@ module MIDIInstrument
       self
     end
 
+    # Manually add messages to the input
+    # @param [Array<MIDIMessage>, MIDIMessage, *MIDIMessage] messages
+    # @return [Array<MIDIMessage>]
     def add(*messages)
       messages = Message.to_messages([messages].flatten)
       messages = messages.map { |message| filter_message(message) }.compact
@@ -68,6 +71,9 @@ module MIDIInstrument
 
     private
 
+    # Filter an event based on the message contained in it
+    # @param [Hash] event
+    # @return [Hash, nil]
     def filter_event(event)
       if !@channel_filter.nil?
         if !(message = filter_message(event[:message])).nil?
@@ -79,6 +85,9 @@ module MIDIInstrument
       end
     end
 
+    # If there's a channel filter, use it to filter the given message.
+    # @param [MIDIMessage] message
+    # @return [MIDIMessage]
     def filter_message(message)
       message = @channel_filter.process(message) unless @channel_filter.nil?
       message

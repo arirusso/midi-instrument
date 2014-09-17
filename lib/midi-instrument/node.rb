@@ -3,7 +3,8 @@ module MIDIInstrument
   # Can listen for and send MIDI messages
   class Node
 
-    include API
+    include API::Input
+    include API::Output
 
     attr_reader :input, :output
 
@@ -13,34 +14,6 @@ module MIDIInstrument
       @input = Input.new(options)
       @output = Output.new
     end
-
-    def inputs
-      @input.devices
-    end
-
-    def outputs
-      @output.devices
-    end
-
-    def receive_channel
-      @input.channel
-    end
-    alias_method :rx_channel, :receive_channel
-
-    def receive_channel=(channel)
-      @input.channel = channel
-    end
-    alias_method :rx_channel=, :receive_channel=
-
-    def transmit_channel
-      @output.channel
-    end
-    alias_method :tx_channel, :transmit_channel
-
-    def transmit_channel=(channel)
-      @output.channel = channel
-    end
-    alias_method :tx_channel=, :transmit_channel=
 
   end
 
