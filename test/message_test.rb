@@ -22,6 +22,7 @@ class MIDIInstrument::MessageTest < Test::Unit::TestCase
         result = MIDIInstrument::Message.to_messages(*messages)
         assert_not_nil result
         assert_not_empty result
+        assert result.all? { |message| message.is_a?(MIDIMessage::NoteOn) }
         messages.each_with_index { |message,i| assert_equal message.note, result[i].note }
       end
 
@@ -64,6 +65,37 @@ class MIDIInstrument::MessageTest < Test::Unit::TestCase
 
       should "return nil for unknown" do
         assert_nil MIDIInstrument::Message.to_bytes("this", "is", "something", "weird", 4560)
+      end
+
+    end
+
+    context ".to_note_offs" do
+
+      should "convert strings to note off" do
+        names = ["A-1", "C#4", "F#5", "D6"]
+        result = MIDIInstrument::Message.to_note_offs(*names)
+        assert_not_nil result
+        assert_not_empty result
+        assert_equal names.size, result.size
+        assert result.all? { |item| item.is_a?(MIDIMessage::NoteOff) }
+        names.each_with_index { |name, i| assert_equal name, result[i].name }
+      end
+
+      should "convert on to off" do
+        names = ["A-1", "C#4", "F#5", "D6"]
+        messages  = MIDIInstrument::Message.to_messages(*names)
+        result = MIDIInstrument::Message.to_note_offs(*messages)
+        assert_not_nil result
+        assert_not_empty result
+        assert result.all? { |message| message.is_a?(MIDIMessage::NoteOff) }
+        messages.each_with_index { |message,i| assert_equal message.note, result[i].note }
+      end
+
+      should "return nil for unknowns" do
+        result = MIDIInstrument::Message.to_note_offs("blah", "blah", 56904)
+        assert_not_nil result
+        assert_equal 3, result.size
+        assert_empty result.compact
       end
 
     end
