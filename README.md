@@ -1,6 +1,6 @@
 #MIDI Instrument
 
-MIDI Instrument modules
+Core MIDI instrument functionality
 
 Used by [Diamond](http://github.com/arirusso/diamond)
 

@@ -1,6 +1,6 @@
 #
 # MIDI Instrument
-# MIDI Instrument modules
+# Core MIDI Instrument Functionality
 #
 # (c)2011-2014 Ari Russo
 # Licensed under Apache 2.0
