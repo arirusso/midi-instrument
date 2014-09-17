@@ -14,15 +14,16 @@ require "midi-message"
 require "unimidi"
 
 # modules
+require "midi-instrument/api"
 require "midi-instrument/device"
-require "midi-instrument/input"
 require "midi-instrument/message"
-require "midi-instrument/output"
 
 # classes
+require "midi-instrument/input"
 require "midi-instrument/listener"
 require "midi-instrument/node"
 require "midi-instrument/note_event"
+require "midi-instrument/output"
 
 module MIDIInstrument
   
