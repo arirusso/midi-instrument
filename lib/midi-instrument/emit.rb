@@ -5,6 +5,7 @@ module MIDIInstrument
 
     def self.included(base)
       base.send(:attr_reader, :outputs, :transmit_channel)
+      base.send(:attr_writer, :mute)
       base.send(:alias_method, :tx_channel, :transmit_channel)
     end
 
@@ -13,7 +14,7 @@ module MIDIInstrument
     # @return [Boolean]
     def transmit_channel=(channel)
       @output_filter = if channel.nil?
-        nil
+        channel
       else
         MIDIFX::Limit.new(:channel, channel, :name => :output_channel)
       end
@@ -33,7 +34,23 @@ module MIDIInstrument
       else
         filter_output(messages).map(&:to_bytes).flatten
       end
-      @outputs.map { |output| output.puts_bytes(*bytes) }
+      @outputs.map { |output| output.puts(*bytes) } if !@mute
+    end
+
+    def toggle_mute
+      @mute = !@mute
+    end
+
+    def mute
+      @mute = true
+    end
+
+    def unmute
+      @mute = false
+    end
+
+    def mute?
+      @mute
     end
 
     private
@@ -50,6 +67,7 @@ module MIDIInstrument
     end
 
     def initialize_emit(options = {})
+      @mute = false
       @outputs = []
     end
 
