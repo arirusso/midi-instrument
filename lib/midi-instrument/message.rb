@@ -29,6 +29,24 @@ module MIDIInstrument
       end
     end
 
+    # Convert the input to MIDI note off messages
+    # @param [*MIDIMessage::NoteOff, *MIDIMessage::NoteOn, *String] args
+    # @param [Hash] options
+    # @option options [Fixnum] :default_channel
+    # @option options [Fixnum] :default_velocity
+    # @return [Array<MIDIMessage::NoteOn, nil>]
+    def to_note_offs(*args)
+      notes = [args.dup].flatten
+      options = notes.last.kind_of?(Hash) ? notes.pop : {}
+      notes.map do |note|
+        case note
+        when String then string_to_note_off(note, options) if note?(note)
+        when MIDIMessage::NoteOff then note
+        when MIDIMessage::NoteOn then note.to_note_off
+        end
+      end
+    end
+
     # Convert the input to MIDI note on messages
     # @param [*MIDIMessage::NoteOn, *String] args
     # @param [Hash] options
@@ -76,9 +94,30 @@ module MIDIInstrument
     # @option options [Fixnum] :default_velocity
     # @return [MIDIMessage::NoteOn]
     def string_to_note_on(string, options = {})
+      string_to_note(string, MIDIMessage::NoteOn, options)
+    end
+
+    # Convert the given string (eg "A4") to a note off message object
+    # @param [String] string
+    # @param [Hash] options
+    # @option options [Fixnum] :default_channel
+    # @option options [Fixnum] :default_velocity
+    # @return [MIDIMessage::NoteOn]
+    def string_to_note_off(string, options = {})
+      string_to_note(string, MIDIMessage::NoteOff, options)
+    end
+
+    # Convert the given string (eg "A4") to the given note message class
+    # @param [String] string
+    # @param [MIDIMessage::NoteOn, MIDIMessage::NoteOff] klass
+    # @param [Hash] options
+    # @option options [Fixnum] :default_channel
+    # @option options [Fixnum] :default_velocity
+    # @return [MIDIMessage::NoteOn]
+    def string_to_note(string, klass, options = {})
       channel = options.fetch(:default_channel, 0)
       velocity = options.fetch(:default_velocity, 100)
-      MIDIMessage::NoteOn[string].new(channel, velocity)
+      klass[string].new(channel, velocity)
     end
 
   end
