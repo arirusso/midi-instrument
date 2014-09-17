@@ -1,69 +1,74 @@
 module MIDIInstrument
   
   # Enable a node to listen for MIDI messages on a MIDI input
-  module Listen
+  class Input
 
-    def self.included(base)
-      base.send(:attr_reader, :inputs, :listener, :receive_channel)
-      base.send(:alias_method, :rx_channel, :receive_channel)
+    extend Forwardable
+
+    attr_reader :devices, :channel
+    def_delegators :@listener, :join
+
+    # @param [Hash] options
+    # @option options [Array<UniMIDI::Input>, UniMIDI::Input] :sources
+    # @option options [Hash] :input_map
+    def initialize(options = {})
+      @listener = Listener.new(options[:sources])
+      @devices = InputContainer.new(@listener)
+      @channel = nil
+      @channel_filter = nil
     end
 
     # Add a MIDI input callback
     # @param [Hash] match Matching spec
     # @param [Proc] callback
-    # @return [Boolean]
-    def receive(match = {}, &callback)
-      listener.receive(match) do |event|
-        event = filter_event(event)
-        yield(event)
+    # @return [Listen]
+    def receive(match = {}, &block)
+      if block_given?
+        @listener.receive(match) do |event|
+          event = filter_event(event)
+          yield(event)
+        end
       end
       self
     end
 
-    def add_messages(*messages)
+    def <<(*messages)
       messages = Message.to_messages([messages].flatten)
       messages = messages.map { |message| filter_message(message) }.compact
-      listener.add(messages) unless messages.empty?
+      @listener.add(messages) unless messages.empty?
       messages
     end
-
+    
     # Set the listener to acknowledge notes on all channels
     # @return [Boolean]
-    def omni_on
-      @input_filter = nil
-      @receive_channel = nil
+    def omni
+      @channel_filter = nil
+      @channel = nil
       true
     end
+    alias_method :omni_on, :omni
 
     # Set the listener to only acknowledge notes from a specific channel
     # @return [Boolean]
-    def receive_channel=(channel)
-      @input_filter = channel.nil? ? channel : MIDIFX::Filter.new(:channel, channel, :name => :input_channel)
-      @receive_channel = channel
+    def channel=(channel)
+      @channel_filter = channel.nil? ? channel : MIDIFX::Filter.new(:channel, channel, :name => :input_channel)
+      @channel = channel
       true
     end
 
-    # Replace the inputs with the given inputs
-    # @param [Array<UniMIDI::Inputs>] inputs
+    # Replace the devices with the given devices
+    # @param [Array<UniMIDI::Inputs>] devices
     # @return [InputContainer]
-    def inputs=(inputs)
-      @inputs.clear
-      @inputs += inputs
-      @inputs
+    def devices=(devices)
+      @devices.clear
+      @devices += devices
+      @devices
     end
 
     private
 
-    # @param [Hash] options
-    # @option options [Array<UniMIDI::Input>, UniMIDI::Input] :sources
-    # @option options [Hash] :input_map
-    def initialize_listen(options = {})
-      @listener = Listener.new(options[:sources])
-      @inputs = InputContainer.new(@listener)
-    end
-
     def filter_event(event)
-      if !@input_filter.nil?
+      if !@channel_filter.nil?
         if !(message = filter_message(event[:message])).nil?
           event[:message] = message
           event
@@ -74,7 +79,7 @@ module MIDIInstrument
     end
 
     def filter_message(message)
-      message = @input_filter.process(message) unless @input_filter.nil?
+      message = @channel_filter.process(message) unless @channel_filter.nil?
       message
     end
 
@@ -95,21 +100,21 @@ module MIDIInstrument
         result
       end
 
-      # Add multiple inputs
-      # @param [Array<UniMIDI::Input>] inputs
+      # Add multiple devices
+      # @param [Array<UniMIDI::Input>] devices
       # @return [InputContainer]
-      def +(inputs)
+      def +(devices)
         result = super
-        @listener.add_input(inputs)
+        @listener.add_input(devices)
         result
       end
 
-      # Add multiple inputs
-      # @param [Array<UniMIDI::Input>] inputs
+      # Add multiple devices
+      # @param [Array<UniMIDI::Input>] devices
       # @return [InputContainer]
-      def concat(inputs)
+      def concat(devices)
         result = super
-        @listener.add_input(inputs)
+        @listener.add_input(devices)
         result
       end
 
@@ -122,19 +127,19 @@ module MIDIInstrument
         result
       end
 
-      # Clear all inputs
+      # Clear all devices
       # @return [InputContainer]
       def clear
-        @listener.inputs.each { |input| delete(input) }
+        @listener.devices.each { |input| delete(input) }
         super
       end
 
-      # Delete multiple inputs
+      # Delete multiple devices
       # @param [Proc] block
       # @return [InputContainer]
       def delete_if(&block)
-        inputs = super
-        @listener.remove_input(inputs)
+        devices = super
+        @listener.remove_input(devices)
         self
       end
 

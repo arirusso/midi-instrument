@@ -22,6 +22,6 @@ instrument = Instrument.new
 instrument.midi.outputs << output
 
 %w{A3 C4 E4 A4 C5 E5 A6}.each do |note|
-  instrument.midi.puts(note)
+  instrument.midi.output << note
   sleep(0.2)
 end

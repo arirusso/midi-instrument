@@ -24,7 +24,7 @@ inst.midi.inputs << input
 notes = Hash.new {|h,k| h[k] = [] }
 last = nil
 
-inst.midi.receive(:class => MIDIMessage::NoteOn) do |event| 
+inst.midi.input.receive(:class => MIDIMessage::NoteOn) do |event| 
   notes[event[:timestamp]] << event[:message].name
   if last != event[:timestamp]
     unless last.nil?
@@ -35,6 +35,6 @@ inst.midi.receive(:class => MIDIMessage::NoteOn) do |event|
   end
 end
 
-inst.midi.listener << "A1" # Add messages manually
+inst.midi.input << "A0" # Add messages manually
 
-inst.midi.listener.join # Wait for input from the MIDI device
+inst.midi.input.join # Wait for input from the MIDI device

@@ -15,9 +15,9 @@ require "unimidi"
 
 # modules
 require "midi-instrument/device"
-require "midi-instrument/emit"
-require "midi-instrument/listen"
+require "midi-instrument/input"
 require "midi-instrument/message"
+require "midi-instrument/output"
 
 # classes
 require "midi-instrument/listener"
