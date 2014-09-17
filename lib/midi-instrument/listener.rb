@@ -23,6 +23,7 @@ module MIDIInstrument
           :timestamp => Time.now.to_f 
         }
         @listener.event.enqueue_all(report)
+        report
       end
     end
     alias_method :<<, :add
