@@ -20,6 +20,13 @@ module MIDIInstrument
       self
     end
 
+    def add_messages(*messages)
+      messages = Message.to_messages([messages].flatten)
+      messages = messages.map { |message| filter_message(message) }.compact
+      listener.add(messages) unless messages.empty?
+      messages
+    end
+
     # Set the listener to acknowledge notes on all channels
     # @return [Boolean]
     def omni_on
@@ -31,7 +38,7 @@ module MIDIInstrument
     # Set the listener to only acknowledge notes from a specific channel
     # @return [Boolean]
     def receive_channel=(channel)
-      @input_filter = MIDIFX::Filter.new(:channel, channel, :name => :input_channel)
+      @input_filter = channel.nil? ? channel : MIDIFX::Filter.new(:channel, channel, :name => :input_channel)
       @receive_channel = channel
       true
     end
@@ -57,9 +64,18 @@ module MIDIInstrument
 
     def filter_event(event)
       if !@input_filter.nil?
-        event[:message] = @input_filter.process(event[:message])
+        if !(message = filter_message(event[:message])).nil?
+          event[:message] = message
+          event
+        end
+      else
+        event
       end
-      event
+    end
+
+    def filter_message(message)
+      message = @input_filter.process(message) unless @input_filter.nil?
+      message
     end
 
     # Container class that handles updating the listener when changes are made
@@ -83,6 +99,15 @@ module MIDIInstrument
       # @param [Array<UniMIDI::Input>] inputs
       # @return [InputContainer]
       def +(inputs)
+        result = super
+        @listener.add_input(inputs)
+        result
+      end
+
+      # Add multiple inputs
+      # @param [Array<UniMIDI::Input>] inputs
+      # @return [InputContainer]
+      def concat(inputs)
         result = super
         @listener.add_input(inputs)
         result

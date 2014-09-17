@@ -16,17 +16,14 @@ module MIDIInstrument
     # Manually add messages to the MIDI input buffer
     # @param [Array<MIDIMessage>, MIDIMessage, *MIDIMessage] args
     # @return [Array<MIDIMessage>]
-    def add(*args)
-      data = [args.dup].flatten
-      messages = Message.to_messages(*data)
-      messages.each do |message|
+    def add(messages)
+      [messages].flatten.map do |message|
         report = { 
           :message => message, 
           :timestamp => Time.now.to_f 
         }
         @listener.event.enqueue_all(report)
       end
-      messages
     end
     alias_method :<<, :add
 
@@ -34,6 +31,12 @@ module MIDIInstrument
     def join
       start if !@listener.running?
       @listener.join
+    end
+
+    # The active inputs
+    # @return [Array<UniMIDI::Input>]
+    def inputs
+      @listener.sources
     end
 
     # Start the listener
