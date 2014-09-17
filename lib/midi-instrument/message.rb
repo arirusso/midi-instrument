@@ -46,14 +46,14 @@ module MIDIInstrument
       end
     end
 
-    private
-
     # Does this object look like a MIDI byte?
     # @param [Object] object
     # @return [Boolean]
     def bytes?(object)
       object.kind_of?(Fixnum) && object >= 0x00 && object <= 0xFF
     end
+
+    private
 
     # Is this object a MIDI message?
     # @param [Object] object
