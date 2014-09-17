@@ -52,7 +52,7 @@ module MIDIInstrument
     # Set the listener to only acknowledge notes from a specific channel
     # @return [Boolean]
     def channel=(channel)
-      @channel_filter = channel.nil? ? channel : MIDIFX::Filter.new(:channel, channel, :name => :input_channel)
+      @channel_filter = channel.nil? ? nil : MIDIFX::Filter.new(:channel, channel, :name => :input_channel)
       @channel = channel
       true
     end
