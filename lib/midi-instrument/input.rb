@@ -32,12 +32,13 @@ module MIDIInstrument
       self
     end
 
-    def <<(*messages)
+    def add(*messages)
       messages = Message.to_messages([messages].flatten)
       messages = messages.map { |message| filter_message(message) }.compact
-      @listener.add(messages) unless messages.empty?
+      @listener.add(*messages) unless messages.empty?
       messages
     end
+    alias_method :<<, :add
     
     # Set the listener to acknowledge notes on all channels
     # @return [Boolean]
@@ -130,7 +131,7 @@ module MIDIInstrument
       # Clear all devices
       # @return [InputContainer]
       def clear
-        @listener.devices.each { |input| delete(input) }
+        @listener.inputs.each { |input| delete(input) }
         super
       end
 

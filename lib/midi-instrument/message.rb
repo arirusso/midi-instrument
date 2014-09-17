@@ -9,9 +9,9 @@ module MIDIInstrument
     # @return [Array<MIDIMessage>]
     def to_messages(*args)
       data = [args.dup].flatten
-      if data.all? { |item| item.kind_of?(String) }
+      if data.all? { |item| note?(item) }
         Message.to_note_ons(*data) # string note names
-      elsif data.all? { |item| item.class.name.match(/\AMIDIMessage::[a-zA-Z]+\z/) }
+      elsif data.all? { |item| message?(item) }
         data # messages
       end
     end
@@ -20,9 +20,9 @@ module MIDIInstrument
     # @return [Array<Fixnum>]
     def to_bytes(*args)
       data = [args.dup].flatten
-      messages = if data.all? { |item| item.kind_of?(String) }
+      messages = if data.all? { |item| note?(item) }
         Message.to_note_ons(*data) # string note names
-      elsif data.all? { |item| item.class.name.match(/\AMIDIMessage::[a-zA-Z]+\z/) }
+      elsif data.all? { |item| message?(item) }
         data # messages
       end
       if messages.nil?
@@ -46,6 +46,14 @@ module MIDIInstrument
     end
 
     private
+
+    def message?(object)
+      object.class.name.match(/\AMIDIMessage::[a-zA-Z]+\z/)
+    end
+
+    def note?(object)
+      object.kind_of?(String) && object.match(/\A[a-zA-Z]{1}(\#|b)?\-?\d{1}\z/)
+    end
 
     def string_to_note_on(string, options = {})
       channel = options.fetch(:default_channel, 0)

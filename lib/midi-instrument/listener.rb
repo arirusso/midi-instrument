@@ -16,7 +16,7 @@ module MIDIInstrument
     # Manually add messages to the MIDI input buffer
     # @param [Array<MIDIMessage>, MIDIMessage, *MIDIMessage] args
     # @return [Array<MIDIMessage>]
-    def add(messages)
+    def add(*messages)
       [messages].flatten.map do |message|
         report = { 
           :message => message, 
