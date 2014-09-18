@@ -44,12 +44,10 @@ class MIDIInstrument::InputTest < Test::Unit::TestCase
     context "#omni" do
       
       should "not have a receive channel" do
-        assert_nil @input.instance_variable_get("@channel_filter")
         @input.channel = 4
         assert_equal 4, @input.channel
         @input.omni
         assert_nil @input.channel
-        assert_nil @input.instance_variable_get("@channel_filter")
       end
 
     end
