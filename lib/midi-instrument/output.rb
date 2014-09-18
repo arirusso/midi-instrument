@@ -30,7 +30,9 @@ module MIDIInstrument
     # @param [*Fixnum, *MIDIMessage::NoteOn, *MIDIMessage::NoteOff, *String] args
     # @return [Array<Fixnum>]
     def puts(*args)
-      bytes = to_bytes(args)
+      messages = Message::to_messages(*args)
+      messages = filter_output(messages)
+      bytes = Message::to_bytes(messages)
       if !@mute
         @devices.each { |output| output.puts(*bytes) }
       end
@@ -72,20 +74,6 @@ module MIDIInstrument
     end
 
     private
-
-    # Convert the input to MIDI message bytes
-    # @param [Array<Fixnum>, Array<MIDIMessage>] args
-    # @return [Array<Fixnum>]
-    def to_bytes(args)
-      data = [args.dup].flatten
-      messages = Message.to_messages(*data)
-      if !messages.nil?
-        messages = filter_output(messages)
-        messages.map(&:to_bytes).flatten
-      elsif Message.bytes?(data)
-        data
-      end
-    end
 
     # Filter messages for output
     # @param [Array<MIDIMessage::ChannelMessage>] messages
