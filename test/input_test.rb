@@ -56,19 +56,15 @@ class MIDIInstrument::InputTest < Test::Unit::TestCase
 
     context "#channel=" do
 
-      should "have filter when channel is specified" do
-        assert_nil @input.instance_variable_get("@channel_filter")
+      should "set channel" do
         @input.channel = 3
-        assert_not_nil @input.instance_variable_get("@channel_filter")
         assert_equal 3, @input.channel
       end
 
-      should "not have filter when channel is nil" do
+      should "unset channel" do
         @input.channel = 3
-        assert_not_nil @input.instance_variable_get("@channel_filter")
         assert_equal 3, @input.channel
         @input.channel = nil
-        assert_nil @input.instance_variable_get("@channel_filter")
         assert_nil @input.channel
       end
 

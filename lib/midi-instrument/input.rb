@@ -15,7 +15,6 @@ module MIDIInstrument
       @listener = Listener.new(options[:sources])
       @devices = InputContainer.new(@listener)
       @channel = nil
-      @channel_filter = nil
     end
 
     # Add a MIDI input callback
@@ -24,10 +23,7 @@ module MIDIInstrument
     # @return [Listen]
     def receive(match = {}, &block)
       if block_given?
-        @listener.receive(match) do |event|
-          event = filter_event(event)
-          yield(event)
-        end
+        @listener.receive(match) { |event| yield(event) }
       end
       self
     end
@@ -36,8 +32,7 @@ module MIDIInstrument
     # @param [Array<MIDIMessage>, MIDIMessage, *MIDIMessage] messages
     # @return [Array<MIDIMessage>]
     def add(*messages)
-      messages = Message.to_messages([messages].flatten)
-      messages = messages.map { |message| filter_message(message) }.compact
+      messages = Message.to_messages([messages].flatten).compact
       @listener.add(*messages) unless messages.empty?
       messages
     end
@@ -46,16 +41,14 @@ module MIDIInstrument
     # Set the listener to acknowledge notes on all channels
     # @return [Boolean]
     def omni
-      @channel_filter = nil
       @channel = nil
       true
     end
     alias_method :omni_on, :omni
 
-    # Set the listener to only acknowledge notes from a specific channel
+    # Specify an input channel
     # @return [Boolean]
     def channel=(channel)
-      @channel_filter = channel.nil? ? nil : MIDIFX::Filter.new(:channel, channel, :name => :input_channel)
       @channel = channel
       true
     end
@@ -70,28 +63,6 @@ module MIDIInstrument
     end
 
     private
-
-    # Filter an event based on the message contained in it
-    # @param [Hash] event
-    # @return [Hash, nil]
-    def filter_event(event)
-      if !@channel_filter.nil?
-        if !(message = filter_message(event[:message])).nil?
-          event[:message] = message
-          event
-        end
-      else
-        event
-      end
-    end
-
-    # If there's a channel filter, use it to filter the given message.
-    # @param [MIDIMessage] message
-    # @return [MIDIMessage]
-    def filter_message(message)
-      message = @channel_filter.process(message) unless @channel_filter.nil?
-      message
-    end
 
     # Container class that handles updating the listener when changes are made
     class InputContainer < Array
