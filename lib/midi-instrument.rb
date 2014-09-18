@@ -27,6 +27,6 @@ require "midi-instrument/output"
 
 module MIDIInstrument
   
-  VERSION = "0.4.2"
+  VERSION = "0.4.3"
   
 end
