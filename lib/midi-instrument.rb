@@ -4,7 +4,7 @@
 #
 # (c)2011-2014 Ari Russo
 # Licensed under Apache 2.0
-# 
+#
 
 # libs
 require "forwardable"
@@ -26,7 +26,7 @@ require "midi-instrument/note_event"
 require "midi-instrument/output"
 
 module MIDIInstrument
-  
-  VERSION = "0.4.4"
-  
+
+  VERSION = "0.4.5"
+
 end
