@@ -1,6 +1,6 @@
 require "helper"
 
-class MIDIInstrument::NoteEventTest < Test::Unit::TestCase
+class MIDIInstrument::NoteEventTest < Minitest::Test
 
   context "NoteEvent" do
 
@@ -13,7 +13,7 @@ class MIDIInstrument::NoteEventTest < Test::Unit::TestCase
         assert_equal(10, event.duration)
         assert_equal(MIDIMessage::NoteOff, event.finish.class)
         assert_equal(msg.note, event.finish.note)
-        assert_equal(msg.note, event.note) 
+        assert_equal(msg.note, event.note)
       end
 
       should "override finish" do

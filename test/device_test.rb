@@ -1,6 +1,6 @@
 require "helper"
 
-class MIDIInstrument::DeviceTest < Test::Unit::TestCase
+class MIDIInstrument::DeviceTest < Minitest::Test
 
   context "Device" do
 
@@ -11,10 +11,10 @@ class MIDIInstrument::DeviceTest < Test::Unit::TestCase
         outputs = UniMIDI::Output.all
         devices = inputs + outputs
         result = MIDIInstrument::Device.partition(devices)
-        assert_not_nil result
+        refute_nil result
         assert result.kind_of?(Hash)
-        assert_not_nil result[:input]
-        assert_not_nil result[:output]
+        refute_nil result[:input]
+        refute_nil result[:output]
         assert_equal inputs, result[:input]
         assert_equal outputs, result[:output]
       end
@@ -23,4 +23,3 @@ class MIDIInstrument::DeviceTest < Test::Unit::TestCase
   end
 
 end
-

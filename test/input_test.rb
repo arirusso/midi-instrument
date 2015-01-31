@@ -1,6 +1,6 @@
 require "helper"
 
-class MIDIInstrument::InputTest < Test::Unit::TestCase
+class MIDIInstrument::InputTest < Minitest::Test
 
   include Mocha::ParameterMatchers
 
@@ -14,12 +14,12 @@ class MIDIInstrument::InputTest < Test::Unit::TestCase
 
       should "add callback" do
         match = { :class => MIDIMessage::NoteOn }
-        block = proc { puts "hello" }
+        block = proc { puts "hello from the callback" }
         MIDIInstrument::Listener.any_instance.expects(:receive).once.with(match).yields(block)
         result = @input.receive(match, &block)
         assert_equal @input, result
       end
-      
+
     end
 
     context "#add" do
@@ -36,13 +36,13 @@ class MIDIInstrument::InputTest < Test::Unit::TestCase
 
       should "not suppress unknown objects" do
         MIDIInstrument::Listener.any_instance.expects(:add).never
-        assert_raise(NoMethodError) { @input.add("hello", "how", "are", "you") }
+        assert_raises(NoMethodError) { @input.add("hello", "how", "are", "you") }
       end
 
     end
 
     context "#omni" do
-      
+
       should "not have a receive channel" do
         @input.channel = 4
         assert_equal 4, @input.channel
@@ -82,5 +82,3 @@ class MIDIInstrument::InputTest < Test::Unit::TestCase
   end
 
 end
-
-

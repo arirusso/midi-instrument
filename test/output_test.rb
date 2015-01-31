@@ -1,6 +1,6 @@
 require "helper"
 
-class MIDIInstrument::OutputTest < Test::Unit::TestCase
+class MIDIInstrument::OutputTest < Minitest::Test
 
   include Mocha::ParameterMatchers
 
@@ -28,14 +28,14 @@ class MIDIInstrument::OutputTest < Test::Unit::TestCase
       end
 
       should "output to multiple devices" do
-        4.times do 
+        4.times do
           @output.devices << Object.new
         end
         names = ["A-1", "C#4", "F#5", "D6"]
         @output.devices.each { |device| device.expects(:puts).once }
         result = @output.puts(*names)
       end
-      
+
     end
 
     context "#mute" do
@@ -66,13 +66,13 @@ class MIDIInstrument::OutputTest < Test::Unit::TestCase
       should "have filter when channel is specified" do
         assert_nil @output.instance_variable_get("@channel_filter")
         @output.channel = 3
-        assert_not_nil @output.instance_variable_get("@channel_filter")
+        refute_nil @output.instance_variable_get("@channel_filter")
         assert_equal 3, @output.channel
       end
 
       should "not have filter when channel is nil" do
         @output.channel = 3
-        assert_not_nil @output.instance_variable_get("@channel_filter")
+        refute_nil @output.instance_variable_get("@channel_filter")
         assert_equal 3, @output.channel
         @output.channel = nil
         assert_nil @output.instance_variable_get("@channel_filter")
@@ -95,6 +95,3 @@ class MIDIInstrument::OutputTest < Test::Unit::TestCase
   end
 
 end
-
-
-
