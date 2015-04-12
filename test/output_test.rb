@@ -79,6 +79,13 @@ class MIDIInstrument::OutputTest < Minitest::Test
         assert_nil @output.channel
       end
 
+      should "filter MIDI message channels when outputting" do
+        @output.channel = 3
+        result = @output.send(:filter_output, [MIDIMessage::NoteOn["C3"].new(0, 100), MIDIMessage::NoteOn["D3"].new(0, 110)])
+        assert result.all? { |message| message.channel == 3 }
+      end
+
+
     end
 
     context "#devices=" do
