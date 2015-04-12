@@ -17,8 +17,7 @@ class MIDIInstrument::MessageTest < Minitest::Test
       end
 
       should "pass MIDI messages" do
-        names = ["A-1", "C#4", "F#5", "D6"]
-        messages  = MIDIInstrument::Message.to_messages(*names)
+        messages = (0..3).to_a.map { |channel| MIDIMessage::NoteOn.new(channel, 64, 100) }
         result = MIDIInstrument::Message.to_messages(*messages)
         refute_nil result
         refute_empty result
@@ -28,6 +27,15 @@ class MIDIInstrument::MessageTest < Minitest::Test
 
       should "return nil for unknowns" do
         assert_nil MIDIInstrument::Message.to_messages("bla", "blah")
+      end
+
+      should "not change midi channel on messages" do
+        messages = (0..3).to_a.map { |channel| MIDIMessage::NoteOn.new(channel, 64, 100) }
+        result = MIDIInstrument::Message.to_messages(*messages)
+        refute_nil result
+        refute_empty result
+        assert result.all? { |message| message.is_a?(MIDIMessage::NoteOn) }
+        assert_equal [0, 1, 2, 3], result.map(&:channel)
       end
 
     end
