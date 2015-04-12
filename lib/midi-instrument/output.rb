@@ -32,7 +32,7 @@ module MIDIInstrument
     def puts(*args)
       messages = Message.to_messages(*args)
       messages = filter_output(messages)
-      bytes = messages.map(&:to_bytes)
+      bytes = messages.map(&:to_bytes).flatten
       if !@mute
         @devices.each { |output| output.puts(*bytes) }
       end
