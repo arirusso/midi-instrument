@@ -2,7 +2,7 @@
 # MIDI Instrument
 # Core MIDI Instrument Functionality
 #
-# (c)2011-2014 Ari Russo
+# (c)2011-2015 Ari Russo
 # Licensed under Apache 2.0
 #
 
