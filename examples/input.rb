@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$:.unshift File.join( File.dirname( __FILE__ ), '../lib')
+$:.unshift(File.join("..", "lib"))
 
 # An instrument that receives note on messages and prints them to the console
 
@@ -24,7 +24,7 @@ inst.midi.inputs << input
 notes = Hash.new {|h,k| h[k] = [] }
 last = nil
 
-inst.midi.input.receive(:class => MIDIMessage::NoteOn) do |event| 
+inst.midi.input.receive(:class => MIDIMessage::NoteOn) do |event|
   notes[event[:timestamp]] << event[:message].name
   if last != event[:timestamp]
     unless last.nil?
