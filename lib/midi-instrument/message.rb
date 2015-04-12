@@ -77,7 +77,7 @@ module MIDIInstrument
     # @param [Object] object
     # @return [Boolean]
     def message?(object)
-      object.class.name.match(/\AMIDIMessage::[a-zA-Z]+\z/)
+      object.kind_of?(MIDIMessage)
     end
 
     # Is this object a string note name? eg "A4"
@@ -123,4 +123,3 @@ module MIDIInstrument
   end
 
 end
-
