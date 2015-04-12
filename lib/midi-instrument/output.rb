@@ -30,13 +30,13 @@ module MIDIInstrument
     # @param [*Fixnum, *MIDIMessage::NoteOn, *MIDIMessage::NoteOff, *String] args
     # @return [Array<Fixnum>]
     def puts(*args)
-      messages = Message::to_messages(*args)
+      messages = Message.to_messages(*args)
       messages = filter_output(messages)
-      bytes = Message::to_bytes(messages)
+      bytes = messages.map(&:to_bytes)
       if !@mute
         @devices.each { |output| output.puts(*bytes) }
       end
-      bytes  
+      bytes
     end
     alias_method :<<, :puts
 
@@ -77,7 +77,7 @@ module MIDIInstrument
 
     # Filter messages for output
     # @param [Array<MIDIMessage::ChannelMessage>] messages
-    # @return [Array<MIDIMessage::ChannelMessage>] 
+    # @return [Array<MIDIMessage::ChannelMessage>]
     def filter_output(messages)
       if @channel_filter.nil?
         messages
